@@ -1,0 +1,908 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>936</width>
+    <height>619</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Bit Viewer</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="6" column="0">
+     <layout class="QHBoxLayout" name="InputLayout">
+      <item>
+       <widget class="QLabel" name="lblInput">
+        <property name="text">
+         <string>Input     </string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="txtInput">
+        <property name="maxLength">
+         <number>1000000</number>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="cmdUpdateInput">
+        <property name="text">
+         <string>Update</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="8" column="0">
+     <layout class="QHBoxLayout" name="DelimiterLayout">
+      <item>
+       <widget class="QLabel" name="lblDelimiter">
+        <property name="text">
+         <string>Delimiter</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="txtDelimiter"/>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="chkDelimAuto">
+        <property name="text">
+         <string>Auto Detect Delimiter</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="chkLineEndDelim">
+        <property name="text">
+         <string>Treat Line Endings As Delimiter</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item row="10" column="0">
+     <layout class="QHBoxLayout" name="OutputLayout">
+      <item>
+       <widget class="QPlainTextEdit" name="txtOutput">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <family>Courier New</family>
+         </font>
+        </property>
+        <property name="lineWrapMode">
+         <enum>QPlainTextEdit::NoWrap</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="9" column="0">
+     <layout class="QHBoxLayout" name="InterpretLayout" stretch="0,0,0,0,0,0,0,0">
+      <item>
+       <widget class="QGroupBox" name="InputGroup">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>130</width>
+          <height>250</height>
+         </size>
+        </property>
+        <property name="title">
+         <string>Input Interpretation</string>
+        </property>
+        <widget class="QLabel" name="lblBaseIn">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>50</y>
+           <width>46</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Base</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="lblBitsPerIn">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>80</y>
+           <width>46</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Bits Per</string>
+         </property>
+        </widget>
+        <widget class="QSpinBox" name="spnBaseIn">
+         <property name="geometry">
+          <rect>
+           <x>51</x>
+           <y>50</y>
+           <width>71</width>
+           <height>22</height>
+          </rect>
+         </property>
+         <property name="minimum">
+          <number>2</number>
+         </property>
+         <property name="maximum">
+          <number>16</number>
+         </property>
+         <property name="value">
+          <number>10</number>
+         </property>
+        </widget>
+        <widget class="QSpinBox" name="spnBitsPerIn">
+         <property name="geometry">
+          <rect>
+           <x>51</x>
+           <y>80</y>
+           <width>71</width>
+           <height>22</height>
+          </rect>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>64</number>
+         </property>
+         <property name="value">
+          <number>8</number>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="chkSignedIn">
+         <property name="geometry">
+          <rect>
+           <x>30</x>
+           <y>110</y>
+           <width>81</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="layoutDirection">
+          <enum>Qt::RightToLeft</enum>
+         </property>
+         <property name="text">
+          <string>Signed</string>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="chkByteReverseIn">
+         <property name="geometry">
+          <rect>
+           <x>20</x>
+           <y>140</y>
+           <width>91</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="layoutDirection">
+          <enum>Qt::RightToLeft</enum>
+         </property>
+         <property name="text">
+          <string>Byte Reverse</string>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="chkBitReverseIn">
+         <property name="geometry">
+          <rect>
+           <x>30</x>
+           <y>170</y>
+           <width>81</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="layoutDirection">
+          <enum>Qt::RightToLeft</enum>
+         </property>
+         <property name="text">
+          <string>Bit Reverse</string>
+         </property>
+        </widget>
+        <widget class="QSpinBox" name="spnBitShiftIn">
+         <property name="geometry">
+          <rect>
+           <x>50</x>
+           <y>200</y>
+           <width>71</width>
+           <height>22</height>
+          </rect>
+         </property>
+         <property name="minimum">
+          <number>-32768</number>
+         </property>
+         <property name="maximum">
+          <number>32767</number>
+         </property>
+        </widget>
+        <widget class="QLabel" name="lblBitShiftIn">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>200</y>
+           <width>46</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Bit Shift</string>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="chkAsciiIn">
+         <property name="geometry">
+          <rect>
+           <x>30</x>
+           <y>20</y>
+           <width>81</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="layoutDirection">
+          <enum>Qt::RightToLeft</enum>
+         </property>
+         <property name="text">
+          <string>ASCII</string>
+         </property>
+        </widget>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_5">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>6</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="middleGroupBox">
+        <property name="minimumSize">
+         <size>
+          <width>200</width>
+          <height>250</height>
+         </size>
+        </property>
+        <property name="title">
+         <string>Middle Interpretation</string>
+        </property>
+        <widget class="QLabel" name="lblByteReverseMid">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>150</y>
+           <width>71</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Byte Reverse</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="cmdDownIn">
+         <property name="geometry">
+          <rect>
+           <x>140</x>
+           <y>70</y>
+           <width>51</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Down</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="lblBitShiftMid">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>210</y>
+           <width>51</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Bit Shift</string>
+         </property>
+        </widget>
+        <widget class="QListView" name="listModIn">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>40</y>
+           <width>121</width>
+           <height>101</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QLabel" name="label">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>20</y>
+           <width>121</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Ordered Operations</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="cmdAddByteReverseIn">
+         <property name="geometry">
+          <rect>
+           <x>140</x>
+           <y>150</y>
+           <width>51</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Add</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="cmdAddBitShiftIn">
+         <property name="geometry">
+          <rect>
+           <x>140</x>
+           <y>210</y>
+           <width>51</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Add</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="cmdDeleteIn">
+         <property name="geometry">
+          <rect>
+           <x>140</x>
+           <y>120</y>
+           <width>51</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Delete</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="cmdUpIn">
+         <property name="geometry">
+          <rect>
+           <x>140</x>
+           <y>40</y>
+           <width>51</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Up</string>
+         </property>
+        </widget>
+        <widget class="QSpinBox" name="spnBitShiftModIn">
+         <property name="geometry">
+          <rect>
+           <x>60</x>
+           <y>210</y>
+           <width>71</width>
+           <height>22</height>
+          </rect>
+         </property>
+         <property name="minimum">
+          <number>-999999</number>
+         </property>
+         <property name="maximum">
+          <number>999999</number>
+         </property>
+        </widget>
+        <widget class="QLabel" name="lblBitReverseMid">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>180</y>
+           <width>61</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Bit Reverse</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="cmdAddBitReverseIn">
+         <property name="geometry">
+          <rect>
+           <x>140</x>
+           <y>180</y>
+           <width>51</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Add</string>
+         </property>
+        </widget>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>6</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="OutputGroupBox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>130</width>
+          <height>250</height>
+         </size>
+        </property>
+        <property name="title">
+         <string>Output Interpretation</string>
+        </property>
+        <widget class="QLabel" name="lblBaseOut">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>50</y>
+           <width>46</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Base</string>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="chkSignedOut">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>110</y>
+           <width>101</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="layoutDirection">
+          <enum>Qt::RightToLeft</enum>
+         </property>
+         <property name="text">
+          <string>Signed</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="lblBitsPerOut">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>80</y>
+           <width>46</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Bits Per</string>
+         </property>
+        </widget>
+        <widget class="QSpinBox" name="spnBitsPerOut">
+         <property name="geometry">
+          <rect>
+           <x>50</x>
+           <y>80</y>
+           <width>71</width>
+           <height>22</height>
+          </rect>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>64</number>
+         </property>
+         <property name="value">
+          <number>8</number>
+         </property>
+        </widget>
+        <widget class="QSpinBox" name="spnBaseOut">
+         <property name="geometry">
+          <rect>
+           <x>50</x>
+           <y>50</y>
+           <width>71</width>
+           <height>22</height>
+          </rect>
+         </property>
+         <property name="minimum">
+          <number>2</number>
+         </property>
+         <property name="maximum">
+          <number>16</number>
+         </property>
+         <property name="value">
+          <number>10</number>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="chkByteReverseOut">
+         <property name="geometry">
+          <rect>
+           <x>20</x>
+           <y>140</y>
+           <width>91</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="layoutDirection">
+          <enum>Qt::RightToLeft</enum>
+         </property>
+         <property name="text">
+          <string>Byte Reverse</string>
+         </property>
+        </widget>
+        <widget class="QSpinBox" name="spnBitShiftOut">
+         <property name="geometry">
+          <rect>
+           <x>50</x>
+           <y>200</y>
+           <width>71</width>
+           <height>22</height>
+          </rect>
+         </property>
+         <property name="minimum">
+          <number>-32768</number>
+         </property>
+         <property name="maximum">
+          <number>32767</number>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="chkBitReverseOut">
+         <property name="geometry">
+          <rect>
+           <x>30</x>
+           <y>170</y>
+           <width>81</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="layoutDirection">
+          <enum>Qt::RightToLeft</enum>
+         </property>
+         <property name="text">
+          <string>Bit Reverse</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="lblBitShiftOut">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>200</y>
+           <width>46</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Bit Shift</string>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="chkAsciiOut">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>20</y>
+           <width>101</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="layoutDirection">
+          <enum>Qt::RightToLeft</enum>
+         </property>
+         <property name="text">
+          <string>ASCII</string>
+         </property>
+        </widget>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>6</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="FormattingGroup">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>250</height>
+         </size>
+        </property>
+        <property name="title">
+         <string>Final Formatting</string>
+        </property>
+        <widget class="QCheckBox" name="chkInvert">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>20</y>
+           <width>70</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Bit Invert</string>
+         </property>
+        </widget>
+        <widget class="QCheckBox" name="chkCArray">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>50</y>
+           <width>70</width>
+           <height>17</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>C Array</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="lblNumRows">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>80</y>
+           <width>61</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Num Rows</string>
+         </property>
+        </widget>
+        <widget class="QSpinBox" name="spnNumRows">
+         <property name="geometry">
+          <rect>
+           <x>70</x>
+           <y>80</y>
+           <width>61</width>
+           <height>22</height>
+          </rect>
+         </property>
+         <property name="minimum">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <number>999</number>
+         </property>
+        </widget>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Expanding</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
+    <item row="11" column="0">
+     <widget class="QLabel" name="lblInfo">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Sunken</enum>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>22</height>
+       </size>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="tabPosition">
+       <enum>QTabWidget::North</enum>
+      </property>
+      <property name="currentIndex">
+       <number>-1</number>
+      </property>
+      <property name="elideMode">
+       <enum>Qt::ElideNone</enum>
+      </property>
+      <property name="tabsClosable">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>936</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionOpen_Binary_File"/>
+    <addaction name="actionOpen_ASCII_File"/>
+    <addaction name="separator"/>
+    <addaction name="actionWrite_Binary_File"/>
+    <addaction name="actionWrite_ASCII_File"/>
+    <addaction name="separator"/>
+    <addaction name="actionCopy_Output_to_Excel"/>
+   </widget>
+   <widget class="QMenu" name="menuTabs">
+    <property name="title">
+     <string>Tabs</string>
+    </property>
+    <addaction name="actionAdd_Tab"/>
+    <addaction name="actionRename_Tab"/>
+    <addaction name="actionCompare_Tabs"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuTabs"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionWrite_Binary_File">
+   <property name="text">
+    <string>Write Binary File</string>
+   </property>
+  </action>
+  <action name="actionWrite_ASCII_File">
+   <property name="text">
+    <string>Write ASCII File</string>
+   </property>
+  </action>
+  <action name="actionWrite_CSV_File">
+   <property name="text">
+    <string>Write CSV File</string>
+   </property>
+  </action>
+  <action name="actionOpen_Binary_File">
+   <property name="text">
+    <string>Open Binary File</string>
+   </property>
+  </action>
+  <action name="actionOpen_ASCII_File">
+   <property name="text">
+    <string>Open ASCII File</string>
+   </property>
+  </action>
+  <action name="actionAdd_Tab">
+   <property name="text">
+    <string>Add Tab</string>
+   </property>
+  </action>
+  <action name="actionCompare_Tabs">
+   <property name="text">
+    <string>Compare Tabs</string>
+   </property>
+  </action>
+  <action name="actionRename_Tab">
+   <property name="text">
+    <string>Rename Tab</string>
+   </property>
+  </action>
+  <action name="actionCopy_Output_to_Excel">
+   <property name="text">
+    <string>Copy Output to Excel</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>
