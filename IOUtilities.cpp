@@ -25,30 +25,66 @@
 static int gai_charToIntLookup[256];
 static int gi_intToAsciiBase = -1;
 
+// Local Functions (to this file)
+static std::string numToStr(INT_UMAX num);
+static char numToChar(int num);
+static std::string numToStr_Base64(INT_UMAX num);
+static char numToChar_Base64(int num);
+
 static void initAsciiToIntLookup(int base)
 {
    int i_index = 0; // Must be signed
    
-   // Set to -1 for all values
-   memset(gai_charToIntLookup, 0xFF, sizeof(gai_charToIntLookup));
-
-   // Fill in the numbers
-   i_index = 0;
-   while(i_index < base && i_index < 10)
+   if(base != 64) // Base64 is special: https://en.wikipedia.org/wiki/Base64
    {
-      gai_charToIntLookup[i_index + '0'] = i_index;
-      ++i_index;
-   }
+      // Set to -1 for all values
+      memset(gai_charToIntLookup, 0xFF, sizeof(gai_charToIntLookup));
 
-   // Fill in the Letters
-   i_index = 0;
-   while(i_index < (base-10) && i_index < 26)
+      // Fill in the numbers
+      i_index = 0;
+      while(i_index < base && i_index < 10)
+      {
+         gai_charToIntLookup[i_index + '0'] = i_index;
+         ++i_index;
+      }
+
+      // Fill in the Letters
+      i_index = 0;
+      while(i_index < (base-10) && i_index < 26)
+      {
+         gai_charToIntLookup[i_index + 'A'] = i_index+10;
+         gai_charToIntLookup[i_index + 'a'] = i_index+10;
+         ++i_index;
+      }
+   }
+   else
    {
-      gai_charToIntLookup[i_index + 'A'] = i_index+10;
-      gai_charToIntLookup[i_index + 'a'] = i_index+10;
-      ++i_index;
+      // Base64 is special: https://en.wikipedia.org/wiki/Base64
+      // Fill in the Capital Letters
+      i_index = 0;
+      while(i_index < 26)
+      {
+         gai_charToIntLookup[i_index + 'A'] = i_index;
+         ++i_index;
+      }
+      // Fill in the Lowercase Letters
+      i_index = 0;
+      while(i_index < 26)
+      {
+         gai_charToIntLookup[i_index + 'a'] = i_index+26;
+         ++i_index;
+      }
+      // Fill in the numbers
+      i_index = 0;
+      while(i_index < 10)
+      {
+         gai_charToIntLookup[i_index + '0'] = i_index+52;
+         ++i_index;
+      }
+      // Fill in the rest
+      gai_charToIntLookup[int('+')] = 62;
+      gai_charToIntLookup[int('/')] = 63;
    }
-
 }
 
 INT_SMAX asciiToInt(const std::string& asc, int base, bool bSigned)
@@ -183,9 +219,10 @@ std::string intToAscii(INT_SMAX num, int base, int numBits, bool isSigned)
     }
 
     numChars = determineNumChars(num, base);
+    auto numToStr_functr = base == 64 ? numToStr_Base64 : numToStr; // Base64 is special: https://en.wikipedia.org/wiki/Base64
     for(i = 0; i < numChars; ++i)
     {
-        retVal.insert(0, numToStr(num % base));
+        retVal.insert(0, numToStr_functr(num % base));
         num /= base;
     }
     if(addNeg == true)
@@ -196,6 +233,7 @@ std::string intToAscii(INT_SMAX num, int base, int numBits, bool isSigned)
 int intToAscii_cArray(INT_UMAX num, int base, bool isSigned, char* leastSignificantPos)
 {
    int numChars;
+   auto numToChar_functr = base == 64 ? numToChar_Base64 : numToChar; // Base64 is special: https://en.wikipedia.org/wiki/Base64
    
    if( (isSigned == true) && (base == 10) && (num & MAX_INT_NEGATIVE_MASK) )
    {
@@ -206,7 +244,7 @@ int intToAscii_cArray(INT_UMAX num, int base, bool isSigned, char* leastSignific
       numChars = determineNumChars(absNum, base);
       for(int i = 0; i < numChars; ++i)
       {
-         *leastSignificantPos = numToChar(absNum % base);
+         *leastSignificantPos = numToChar_functr(absNum % base);
          --leastSignificantPos;
          absNum /= base;
       }
@@ -217,7 +255,7 @@ int intToAscii_cArray(INT_UMAX num, int base, bool isSigned, char* leastSignific
       numChars = determineNumChars(num, base);
       for(int i = 0; i < numChars; ++i)
       {
-         *leastSignificantPos = numToChar(num % base);
+         *leastSignificantPos = numToChar_functr(num % base);
          --leastSignificantPos;
          num /= base;
       }
@@ -244,7 +282,7 @@ int determineNumChars(INT_UMAX value, int base)
     return i;
 }
 
-std::string numToStr(INT_UMAX num)
+static std::string numToStr(INT_UMAX num)
 {
     std::string retVal;
     if(num < 10)
@@ -258,7 +296,7 @@ std::string numToStr(INT_UMAX num)
     return retVal;
 }
 
-char numToChar(int num)
+static char numToChar(int num)
 {
     char retVal;
     if(num < 10)
@@ -269,6 +307,40 @@ char numToChar(int num)
     {
         retVal = num - 10 + 'A';
     }
+    return retVal;
+}
+
+static std::string numToStr_Base64(INT_UMAX num)
+{
+    std::string retVal;
+    if(num < 26)
+        retVal = num + 'A';
+    else if(num < 52)
+        retVal = num - 26 + 'a';
+    else if(num < 62)
+        retVal = num - 52 + '0';
+    else if(num == 62)
+       retVal = '+';
+    else
+       retVal = '/';
+
+    return retVal;
+}
+
+static char numToChar_Base64(int num)
+{
+    char retVal;
+    if(num < 26)
+        retVal = num + 'A';
+    else if(num < 52)
+        retVal = num - 26 + 'a';
+    else if(num < 62)
+        retVal = num - 52 + '0';
+    else if(num == 62)
+       retVal = '+';
+    else
+       retVal = '/';
+
     return retVal;
 }
 

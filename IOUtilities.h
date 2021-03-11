@@ -23,8 +23,6 @@ INT_SMAX asciiToInt(const std::string& asc, int base, bool bSigned);
 std::string intToAscii(INT_SMAX num, int base, int numBits, bool isSigned);
 int intToAscii_cArray(INT_UMAX num, int base, bool isSigned, char* leastSignificantPos);
 int determineNumChars(INT_UMAX value, int base);
-std::string numToStr(INT_UMAX num);
-char numToChar(int num);
 
 INT_UMAX fillInMSBs(INT_UMAX value, UINT_32 i_numBitsToNotFillIn, BIT bitValue);
 
