@@ -42,3 +42,4 @@ FORMS    += mainwindow.ui \
     tabcomparedialog.ui
 
 win32:RC_FILE = QTBitViewer.rc
+QT += widgets

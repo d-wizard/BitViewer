@@ -326,7 +326,7 @@ void BitViewerData::outputDataToStr()
    }
 
    pc_outText[i_totalOutputSize-1] = '\0';
-   m_outputText = QString::fromAscii(pc_outText, i_totalOutputSize-1);
+   m_outputText = pc_outText;
    delete[] pc_outText;
 
 }
