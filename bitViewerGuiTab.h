@@ -55,7 +55,8 @@ typedef enum
 class GuiObject
 {
 public:
-    GuiObject(void* guiPtr){}
+    GuiObject(void* guiPtr){(void)guiPtr;}
+    virtual ~GuiObject(){}
 
     virtual bool hasGuiChanged() = 0;
     virtual void guiValueChanged() = 0;

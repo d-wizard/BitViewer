@@ -38,8 +38,6 @@
 #include "bitStreamCompare.h"
 #include <QClipboard>
 
-static const char LINE_END[] = {'\r', '\n'};
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -308,7 +306,7 @@ void MainWindow::AddBitViewerTab()
     {
         char tabname[20];
         memset(tabname, '\0', sizeof(tabname));
-        snprintf(tabname, sizeof(tabname) - 1, "Tab %d", m_guiTabs.size());
+        snprintf(tabname, sizeof(tabname) - 1, "Tab %d", (int)m_guiTabs.size());
 
         bool ok;
         QInputDialog* inputDialog = new QInputDialog();
@@ -377,6 +375,7 @@ void MainWindow::on_cmdUpdateInput_clicked()
 
 void MainWindow::on_tabWidget_currentChanged(int index)
 {
+    (void)index;
     if(mp_curGuiTab != NULL)
     {
         ++m_ignorGuiChange;
@@ -574,8 +573,8 @@ void MainWindow::WriteOutputToCsvFile()
 
 void MainWindow::compareTabs_Finished(UINT_32 dst, UINT_32 src)
 {
-    if( (dst >= 0 && dst < m_guiTabs.size()) &&
-        (src >= 0 && src < m_guiTabs.size()) )
+    if( (dst < m_guiTabs.size()) &&
+        (src < m_guiTabs.size()) )
     {
         bitStreamCompare comp(*m_guiTabs[dst]->getIoGuiTab()->getBitViewerData(),
                               *m_guiTabs[src]->getIoGuiTab()->getBitViewerData());
@@ -621,15 +620,18 @@ void MainWindow::compareTabs_Finished(UINT_32 dst, UINT_32 src)
 
 void MainWindow::on_txtInput_textChanged(const QString &arg1)
 {
+    (void)arg1;
 }
 void MainWindow::on_txtDelimiter_textChanged(const QString &arg1)
 {
+    (void)arg1;
     updateOutputOnChange(GUI_DELIMITER);
 }
 
 
 void MainWindow::on_chkAsciiIn_stateChanged(int arg1)
 {
+    (void)arg1;
     if(mp_curGuiTab != NULL && m_ignorTabChange == 0)
     {
         ++m_readyToPrint;
@@ -673,6 +675,7 @@ void MainWindow::on_chkAsciiIn_stateChanged(int arg1)
 
 void MainWindow::on_chkAsciiOut_stateChanged(int arg1)
 {
+    (void)arg1;
     if(mp_curGuiTab != NULL && m_ignorTabChange == 0)
     {
         ++m_readyToPrint;
@@ -716,6 +719,7 @@ void MainWindow::on_chkAsciiOut_stateChanged(int arg1)
 
 void MainWindow::on_chkBase64In_stateChanged(int arg1)
 {
+   (void)arg1;
    if(mp_curGuiTab != NULL && m_ignorTabChange == 0)
    {
       ++m_readyToPrint;
@@ -759,6 +763,7 @@ void MainWindow::on_chkBase64In_stateChanged(int arg1)
 
 void MainWindow::on_chkBase64Out_stateChanged(int arg1)
 {
+   (void)arg1;
    if(mp_curGuiTab != NULL && m_ignorTabChange == 0)
    {
       ++m_readyToPrint;
@@ -803,6 +808,7 @@ void MainWindow::on_chkBase64Out_stateChanged(int arg1)
 
 void MainWindow::on_spnBitsPerIn_valueChanged(int arg1)
 {
+    (void)arg1;
     if(mp_curGuiTab != NULL && m_ignorTabChange == 0)
     {
         int curVal = ui->spnBitsPerIn->value();
@@ -837,6 +843,7 @@ void MainWindow::on_spnBitsPerIn_valueChanged(int arg1)
 
 void MainWindow::on_spnBitsPerOut_valueChanged(int arg1)
 {
+    (void)arg1;
     if(mp_curGuiTab != NULL && m_ignorTabChange == 0)
     {
         int curVal = ui->spnBitsPerOut->value();
@@ -875,6 +882,7 @@ void MainWindow::on_txtInput_editingFinished()
 
 void MainWindow::on_chkDelimAuto_stateChanged(int arg1)
 {
+    (void)arg1;
     if(m_ignorTabChange == 0)
     {
         if(ui->chkDelimAuto->isChecked())
@@ -988,31 +996,37 @@ void MainWindow::on_spnNumRows_editingFinished()
 
 void MainWindow::on_spnBaseIn_valueChanged(int arg1)
 {
+    (void)arg1;
     updateOutputOnChange(GUI_IN_BASE);
 }
 
 void MainWindow::on_spnBitShiftIn_valueChanged(int arg1)
 {
+    (void)arg1;
     updateOutputOnChange(GUI_IN_BIT_SHIFT);
 }
 
 void MainWindow::on_spnBaseOut_valueChanged(int arg1)
 {
+    (void)arg1;
     updateOutputOnChange(GUI_OUT_BASE);
 }
 
 void MainWindow::on_spnBitShiftOut_valueChanged(int arg1)
 {
+    (void)arg1;
     updateOutputOnChange(GUI_OUT_BIT_SHIFT);
 }
 
 void MainWindow::on_spnNumRows_valueChanged(int arg1)
 {
+    (void)arg1;
     updateOutputOnChange(GUI_NUM_ROWS);
 }
 
 void MainWindow::on_chkLineEndDelim_stateChanged(int arg1)
 {
+    (void)arg1;
     updateOutputOnChange(GUI_LINE_END_DELIM);
 }
 

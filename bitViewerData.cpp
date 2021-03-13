@@ -54,11 +54,6 @@ static const char BASE64_TO_ASCII[64] = {
 
 void BitViewerData::generateOutputData(bool b_inputChanged)
 {
-    int i_inBits = 0;
-    int i_inValues = 0;
-    int i_outBits = 0;
-    int i_outValues = 0;
-
     UINT_32 i_index;
     UINT_32 i_numInValues;
 
@@ -103,7 +98,7 @@ void BitViewerData::generateOutputData(bool b_inputChanged)
                m_Delimiter.toStdString()) );
         }
 
-        QStringList inValues = inText.split(m_Delimiter, QString::SkipEmptyParts);
+        QStringList inValues = inText.split(m_Delimiter, Qt::SkipEmptyParts);
 
         // Input
         i_numInValues = inValues.count();
@@ -123,10 +118,6 @@ void BitViewerData::generateOutputData(bool b_inputChanged)
 
     m_inNumValues = m_ioDataIn.size();
     m_inNumBits = m_bitData.size();
-
-    i_inValues = m_ioDataIn.size();
-    i_inBits = m_bitData.size();
-
 
     if(m_InByteRev)
     {
@@ -166,9 +157,6 @@ void BitViewerData::generateOutputData(bool b_inputChanged)
             (*i_bitIter) ^= 1;
         }
     }
-
-    i_outValues = m_ioDataOut.size();
-    i_outBits = m_bitData.size();
 
     m_ioDataOut.clear();
     FromBitVector(m_ioDataOut, m_bitData, m_OutBitsPer, m_OutSigned);
