@@ -1,4 +1,4 @@
-/* Copyright 2012 - 2018 Dan Williams. All Rights Reserved.
+/* Copyright 2012 - 2018, 2021 Dan Williams. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -27,6 +27,31 @@
 #include "AutoDelimiter.h"
 #include "bitViewerData.h"
 
+static const char ASCII_TO_BASE64[256] = {
+   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, // 000 - 015
+   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, // 016 - 031
+   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 62,  0,  0,  0, 63, // 032 - 047
+  52, 53, 54, 55, 56, 57, 58, 59, 60, 61,  0,  0,  0,  0,  0,  0, // 048 - 063
+   0,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, // 064 - 079
+  15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,  0,  0,  0,  0,  0, // 080 - 095
+   0, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, // 096 - 111
+  41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51,  0,  0,  0,  0,  0, // 112 - 127
+   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, // 128 - 143
+   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, // 144 - 159
+   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, // 160 - 175
+   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, // 176 - 191
+   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, // 192 - 207
+   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, // 208 - 223
+   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, // 224 - 239
+   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // 240 - 255
+};
+static const char BASE64_TO_ASCII[64] = {
+ 'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P', // 000 - 015
+ 'Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f', // 016 - 031
+ 'g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v', // 032 - 047
+ 'w','x','y','z','0','1','2','3','4','5','6','7','8','9','+','/'  // 048 - 063
+};
+
 void BitViewerData::generateOutputData(bool b_inputChanged)
 {
     int i_inBits = 0;
@@ -37,14 +62,24 @@ void BitViewerData::generateOutputData(bool b_inputChanged)
     UINT_32 i_index;
     UINT_32 i_numInValues;
 
-    if(m_InAscii)
+    if(m_InAscii || m_InBase64)
     {
         std::string inText = m_Input.toStdString();
         const char* pc_inText = inText.c_str();
         m_ioDataIn.clear();
-        for(i_index = 0; i_index < inText.size(); ++i_index)
+        if(m_InBase64)
         {
-            m_ioDataIn.push_back(pc_inText[i_index]);
+           for(i_index = 0; i_index < inText.size(); ++i_index)
+           {
+               m_ioDataIn.push_back(ASCII_TO_BASE64[(unsigned)pc_inText[i_index]]);
+           }
+        }
+        else
+        {
+           for(i_index = 0; i_index < inText.size(); ++i_index)
+           {
+               m_ioDataIn.push_back(pc_inText[i_index]);
+           }
         }
     }
     else
@@ -163,6 +198,28 @@ void BitViewerData::outputAsciiDataToStr()
 
     delete [] outText;
 }
+
+void BitViewerData::outputBase64DataToStr()
+{
+    int outSize = m_ioDataOut.size();
+    char* outText = new char[outSize + 1];
+    bool nonNullByteWritten = false;
+    outText[outSize] = '\0';
+    int i_index = 0;
+    for(ioData::iterator outValues = m_ioDataOut.begin(); outValues != m_ioDataOut.end(); ++outValues)
+    {
+        if(nonNullByteWritten || (*outValues & 0x3F))
+        {
+            outText[i_index++] = BASE64_TO_ASCII[(*outValues & 0x3F)];
+            nonNullByteWritten = true;
+        }
+    }
+    outText[i_index] = '\0';
+    m_outputText = QString::fromStdString(outText);
+
+    delete [] outText;
+}
+
 void BitViewerData::outputDataToStr()
 {
    static const char LINE_END[] = {'\r', '\n'};

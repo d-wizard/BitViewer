@@ -1,4 +1,4 @@
-/* Copyright 2012 - 2018 Dan Williams. All Rights Reserved.
+/* Copyright 2012 - 2018, 2021 Dan Williams. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -62,10 +62,12 @@ MainWindow::MainWindow(QWidget *parent) :
     m_guiPtrs[GUI_OUT_BITS_PER  ] = ui->spnBitsPerOut;
     m_guiPtrs[GUI_OUT_BIT_SHIFT ] = ui->spnBitShiftOut;
     m_guiPtrs[GUI_NUM_ROWS      ] = ui->spnNumRows;
+    m_guiPtrs[GUI_IN_BASE64     ] = ui->chkBase64In;
     m_guiPtrs[GUI_IN_ASCII      ] = ui->chkAsciiIn;
     m_guiPtrs[GUI_IN_SIGNED     ] = ui->chkSignedIn;
     m_guiPtrs[GUI_IN_BYTE_REV   ] = ui->chkByteReverseIn;
     m_guiPtrs[GUI_IN_BIT_REV    ] = ui->chkBitReverseIn;
+    m_guiPtrs[GUI_OUT_BASE64    ] = ui->chkBase64Out;
     m_guiPtrs[GUI_OUT_ASCII     ] = ui->chkAsciiOut;
     m_guiPtrs[GUI_OUT_SIGNED    ] = ui->chkSignedOut;
     m_guiPtrs[GUI_OUT_BYTE_REV  ] = ui->chkByteReverseOut;
@@ -121,10 +123,12 @@ MainWindow::MainWindow(QWidget *parent) :
     addIniParamToVector(m_iniParams, "OutBitsPer"  , INI_SPIN_BOX , ui->spnBitsPerOut);
     addIniParamToVector(m_iniParams, "OutBitShift" , INI_SPIN_BOX , ui->spnBitShiftOut);
     addIniParamToVector(m_iniParams, "NumRows"     , INI_SPIN_BOX , ui->spnNumRows);
+    addIniParamToVector(m_iniParams, "InBase64"    , INI_CHECK_BOX, ui->chkBase64In);
     addIniParamToVector(m_iniParams, "InAscii"     , INI_CHECK_BOX, ui->chkAsciiIn);
     addIniParamToVector(m_iniParams, "InSigned"    , INI_CHECK_BOX, ui->chkSignedIn);
     addIniParamToVector(m_iniParams, "InByteRev"   , INI_CHECK_BOX, ui->chkByteReverseIn);
     addIniParamToVector(m_iniParams, "InBitRev"    , INI_CHECK_BOX, ui->chkBitReverseIn);
+    addIniParamToVector(m_iniParams, "OutBase64"   , INI_CHECK_BOX, ui->chkBase64Out);
     addIniParamToVector(m_iniParams, "OutAscii"    , INI_CHECK_BOX, ui->chkAsciiOut);
     addIniParamToVector(m_iniParams, "OutSigned"   , INI_CHECK_BOX, ui->chkSignedOut);
     addIniParamToVector(m_iniParams, "OutByteRev"  , INI_CHECK_BOX, ui->chkByteReverseOut);
@@ -424,7 +428,7 @@ void MainWindow::CopyOutputForExcel()
     QClipboard* clipboard = QApplication::clipboard();
     QString clipText;
 
-    if(ui->chkAsciiOut->isChecked() == false && ui->chkCArray->isChecked() == false)
+    if(ui->chkAsciiOut->isChecked() == false && ui->chkBase64Out->isChecked() == false && ui->chkCArray->isChecked() == false)
     {
         ++m_ignorGuiChange;
         ui->chkCArray->setChecked(true);
@@ -653,6 +657,7 @@ void MainWindow::on_chkAsciiIn_stateChanged(int arg1)
         ui->spnBitsPerIn->setHidden(true);
         ui->lblBitsPerIn->setHidden(true);
         ui->chkSignedIn->setHidden(true);
+        ui->chkBase64In->setHidden(true);
     }
     else
     {
@@ -662,6 +667,7 @@ void MainWindow::on_chkAsciiIn_stateChanged(int arg1)
         ui->spnBitsPerIn->setHidden(false);
         ui->lblBitsPerIn->setHidden(false);
         ui->chkSignedIn->setHidden(false);
+        ui->chkBase64In->setHidden(false);
     }
 }
 
@@ -694,6 +700,7 @@ void MainWindow::on_chkAsciiOut_stateChanged(int arg1)
         ui->spnBitsPerOut->setHidden(true);
         ui->lblBitsPerOut->setHidden(true);
         ui->chkSignedOut->setHidden(true);
+        ui->chkBase64Out->setHidden(true);
     }
     else
     {
@@ -703,8 +710,96 @@ void MainWindow::on_chkAsciiOut_stateChanged(int arg1)
         ui->spnBitsPerOut->setHidden(false);
         ui->lblBitsPerOut->setHidden(false);
         ui->chkSignedOut->setHidden(false);
+        ui->chkBase64Out->setHidden(false);
     }
 }
+
+void MainWindow::on_chkBase64In_stateChanged(int arg1)
+{
+   if(mp_curGuiTab != NULL && m_ignorTabChange == 0)
+   {
+      ++m_readyToPrint;
+      if(ui->chkBase64In->isChecked() == true)
+      {
+         mp_curGuiTab->m_base64SaveIn.i_bitsPer = ui->spnBitsPerIn->value();
+         ui->spnBitsPerIn->setValue(6);
+
+         mp_curGuiTab->m_base64SaveIn.b_signed = ui->chkSignedIn->isChecked();
+         ui->chkSignedIn->setChecked(false);
+      }
+      else
+      {
+         ui->spnBitsPerIn->setValue(mp_curGuiTab->m_base64SaveIn.i_bitsPer);
+         ui->chkSignedIn->setChecked(mp_curGuiTab->m_base64SaveIn.b_signed);
+      }
+      --m_readyToPrint;
+      updateOutputOnChange(GUI_IN_BASE64);
+   }
+   if(ui->chkBase64In->isChecked() == true)
+   {
+      ui->chkByteReverseIn->setHidden(true);
+      ui->spnBaseIn->setHidden(true);
+      ui->lblBaseIn->setHidden(true);
+      ui->spnBitsPerIn->setHidden(true);
+      ui->lblBitsPerIn->setHidden(true);
+      ui->chkSignedIn->setHidden(true);
+      ui->chkAsciiIn->setHidden(true);
+   }
+   else
+   {
+      ui->chkByteReverseIn->setHidden(false);
+      ui->spnBaseIn->setHidden(false);
+      ui->lblBaseIn->setHidden(false);
+      ui->spnBitsPerIn->setHidden(false);
+      ui->lblBitsPerIn->setHidden(false);
+      ui->chkSignedIn->setHidden(false);
+      ui->chkAsciiIn->setHidden(false);
+   }
+}
+
+void MainWindow::on_chkBase64Out_stateChanged(int arg1)
+{
+   if(mp_curGuiTab != NULL && m_ignorTabChange == 0)
+   {
+      ++m_readyToPrint;
+      if(ui->chkBase64Out->isChecked() == true)
+      {
+         mp_curGuiTab->m_base64SaveOut.i_bitsPer = ui->spnBitsPerOut->value();
+         ui->spnBitsPerOut->setValue(6);
+
+         mp_curGuiTab->m_base64SaveOut.b_signed = ui->chkSignedOut->isChecked();
+         ui->chkSignedOut->setChecked(false);
+      }
+      else
+      {
+         ui->spnBitsPerOut->setValue(mp_curGuiTab->m_base64SaveOut.i_bitsPer);
+         ui->chkSignedOut->setChecked(mp_curGuiTab->m_base64SaveOut.b_signed);
+      }
+      --m_readyToPrint;
+      updateOutputOnChange(GUI_OUT_BASE64);
+   }
+   if(ui->chkBase64Out->isChecked() == true)
+   {
+      ui->chkByteReverseOut->setHidden(true);
+      ui->spnBaseOut->setHidden(true);
+      ui->lblBaseOut->setHidden(true);
+      ui->spnBitsPerOut->setHidden(true);
+      ui->lblBitsPerOut->setHidden(true);
+      ui->chkSignedOut->setHidden(true);
+      ui->chkAsciiOut->setHidden(true);
+   }
+   else
+   {
+      ui->chkByteReverseOut->setHidden(false);
+      ui->spnBaseOut->setHidden(false);
+      ui->lblBaseOut->setHidden(false);
+      ui->spnBitsPerOut->setHidden(false);
+      ui->lblBitsPerOut->setHidden(false);
+      ui->chkSignedOut->setHidden(false);
+      ui->chkAsciiOut->setHidden(false);
+   }
+}
+
 
 void MainWindow::on_spnBitsPerIn_valueChanged(int arg1)
 {
@@ -974,4 +1069,3 @@ void MainWindow::readModType(const QString& t_modStr, e_modType& e_mod, INT_32& 
     }
 }
 #endif
-

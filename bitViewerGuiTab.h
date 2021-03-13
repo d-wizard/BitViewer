@@ -1,4 +1,4 @@
-/* Copyright 2012 - 2018 Dan Williams. All Rights Reserved.
+/* Copyright 2012 - 2018, 2021 Dan Williams. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -35,10 +35,12 @@ typedef enum
     GUI_OUT_BITS_PER,
     GUI_OUT_BIT_SHIFT,
     GUI_NUM_ROWS,
+    GUI_IN_BASE64,
     GUI_IN_ASCII,
     GUI_IN_SIGNED,
     GUI_IN_BYTE_REV,
     GUI_IN_BIT_REV,
+    GUI_OUT_BASE64,
     GUI_OUT_ASCII,
     GUI_OUT_SIGNED,
     GUI_OUT_BYTE_REV,

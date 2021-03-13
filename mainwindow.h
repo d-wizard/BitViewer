@@ -1,4 +1,4 @@
-/* Copyright 2012 - 2018 Dan Williams. All Rights Reserved.
+/* Copyright 2012 - 2018, 2021 Dan Williams. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -87,6 +87,9 @@ public:
 
     tAsciiSave m_asciiSaveIn;
     tAsciiSave m_asciiSaveOut;
+    tAsciiSave m_base64SaveIn;
+    tAsciiSave m_base64SaveOut;
+
     int i_bitsPerInSave;
     int i_bitsPerOutSave;
 
@@ -94,11 +97,17 @@ private:
     BitViewerGuiTab();
     void initSaveParam(void** p_guiTabPtrs)
     {
-        m_asciiSaveIn.i_bitsPer = ((QSpinBox*)p_guiTabPtrs[GUI_IN_BITS_PER])->value();
-        m_asciiSaveIn.b_signed = ((QCheckBox*)p_guiTabPtrs[GUI_IN_SIGNED])->isChecked();
+       m_asciiSaveIn.i_bitsPer = ((QSpinBox*)p_guiTabPtrs[GUI_IN_BITS_PER])->value();
+       m_asciiSaveIn.b_signed = ((QCheckBox*)p_guiTabPtrs[GUI_IN_SIGNED])->isChecked();
 
-        m_asciiSaveOut.i_bitsPer = ((QSpinBox*)p_guiTabPtrs[GUI_OUT_BITS_PER])->value();
-        m_asciiSaveOut.b_signed = ((QCheckBox*)p_guiTabPtrs[GUI_OUT_SIGNED])->isChecked();
+       m_asciiSaveOut.i_bitsPer = ((QSpinBox*)p_guiTabPtrs[GUI_OUT_BITS_PER])->value();
+       m_asciiSaveOut.b_signed = ((QCheckBox*)p_guiTabPtrs[GUI_OUT_SIGNED])->isChecked();
+
+       m_base64SaveIn.i_bitsPer = ((QSpinBox*)p_guiTabPtrs[GUI_IN_BITS_PER])->value();
+       m_base64SaveIn.b_signed = ((QCheckBox*)p_guiTabPtrs[GUI_IN_SIGNED])->isChecked();
+
+       m_base64SaveOut.i_bitsPer = ((QSpinBox*)p_guiTabPtrs[GUI_OUT_BITS_PER])->value();
+       m_base64SaveOut.b_signed = ((QCheckBox*)p_guiTabPtrs[GUI_OUT_SIGNED])->isChecked();
 
         i_bitsPerInSave = m_asciiSaveIn.i_bitsPer;
         i_bitsPerOutSave = m_asciiSaveOut.i_bitsPer;
@@ -223,6 +232,10 @@ private slots:
     void on_tabWidget_currentChanged(int index);
 
     void on_cmdUpdateInput_clicked();
+
+    void on_chkBase64In_stateChanged(int arg1);
+
+    void on_chkBase64Out_stateChanged(int arg1);
 
 private:
     Ui::MainWindow *ui;

@@ -1,4 +1,4 @@
-/* Copyright 2012 - 2018 Dan Williams. All Rights Reserved.
+/* Copyright 2012 - 2018, 2021 Dan Williams. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -157,6 +157,7 @@ bitStreamCompare::bitStreamCompare(BitViewerData dstBitData, BitViewerData srcBi
     // Set all output values of the dest to the src,
     // so only the input changes will affect the compare.
     m_bitViewerData.m_OutAscii    = srcBitData.m_OutAscii;
+    m_bitViewerData.m_OutBase64   = srcBitData.m_OutBase64;
     m_bitViewerData.m_OutBase     = srcBitData.m_OutBase;
     m_bitViewerData.m_OutBitsPer  = srcBitData.m_OutBitsPer;
     m_bitViewerData.m_OutSigned   = false; // This value will be toggled in srcBitData. Set to false.

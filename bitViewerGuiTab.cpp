@@ -1,4 +1,4 @@
-/* Copyright 2012 - 2018 Dan Williams. All Rights Reserved.
+/* Copyright 2012 - 2018, 2021 Dan Williams. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -56,10 +56,12 @@ void GuiTab::fillGuiObjArray(void** p_guiPtrs)
     m_guiObjs[GUI_OUT_BITS_PER  ] = new SpinBoxObject (p_guiPtrs[GUI_OUT_BITS_PER  ], &m_bitViewerData.m_OutBitsPer  );
     m_guiObjs[GUI_OUT_BIT_SHIFT ] = new SpinBoxObject (p_guiPtrs[GUI_OUT_BIT_SHIFT ], &m_bitViewerData.m_OutBitShift );
     m_guiObjs[GUI_NUM_ROWS      ] = new SpinBoxObject (p_guiPtrs[GUI_NUM_ROWS      ], &m_bitViewerData.m_NumRows     );
+    m_guiObjs[GUI_IN_BASE64     ] = new CheckBoxObject(p_guiPtrs[GUI_IN_BASE64     ], &m_bitViewerData.m_InBase64    );
     m_guiObjs[GUI_IN_ASCII      ] = new CheckBoxObject(p_guiPtrs[GUI_IN_ASCII      ], &m_bitViewerData.m_InAscii     );
     m_guiObjs[GUI_IN_SIGNED     ] = new CheckBoxObject(p_guiPtrs[GUI_IN_SIGNED     ], &m_bitViewerData.m_InSigned    );
     m_guiObjs[GUI_IN_BYTE_REV   ] = new CheckBoxObject(p_guiPtrs[GUI_IN_BYTE_REV   ], &m_bitViewerData.m_InByteRev   );
     m_guiObjs[GUI_IN_BIT_REV    ] = new CheckBoxObject(p_guiPtrs[GUI_IN_BIT_REV    ], &m_bitViewerData.m_InBitRev    );
+    m_guiObjs[GUI_OUT_BASE64    ] = new CheckBoxObject(p_guiPtrs[GUI_OUT_BASE64    ], &m_bitViewerData.m_OutBase64   );
     m_guiObjs[GUI_OUT_ASCII     ] = new CheckBoxObject(p_guiPtrs[GUI_OUT_ASCII     ], &m_bitViewerData.m_OutAscii    );
     m_guiObjs[GUI_OUT_SIGNED    ] = new CheckBoxObject(p_guiPtrs[GUI_OUT_SIGNED    ], &m_bitViewerData.m_OutSigned   );
     m_guiObjs[GUI_OUT_BYTE_REV  ] = new CheckBoxObject(p_guiPtrs[GUI_OUT_BYTE_REV  ], &m_bitViewerData.m_OutByteRev  );
@@ -136,28 +138,32 @@ void GuiTab::writeToGui()
 
 void GuiTab::generateOutput(bool b_forceUpdate)
 {
-    bool b_notSynced = syncInterpretWithGui();
-    if(b_notSynced)
-    {
-        b_notSynced = false;
-    }
-    if( (m_bitViewerData.m_Delimiter.length() != 0 || m_bitViewerData.m_InAscii == true) &&
+   bool b_notSynced = syncInterpretWithGui();
+   if(b_notSynced)
+   {
+      b_notSynced = false;
+   }
+   if( (m_bitViewerData.m_Delimiter.length() != 0 || m_bitViewerData.m_InAscii == true || m_bitViewerData.m_InBase64 == true) &&
         m_bitViewerData.m_Input.length() != 0 &&
-        (b_forceUpdate || hasInputValueChanged() || hasInterpretValuesChanged()) )
-    {
-        m_bitViewerData.generateOutputData(hasInputValueChanged() || b_forceUpdate);
-        if(m_bitViewerData.m_OutAscii)
-        {
-            m_bitViewerData.outputAsciiDataToStr();
-        }
-        else
-        {
-            m_bitViewerData.outputDataToStr();
-        }
+       (b_forceUpdate || hasInputValueChanged() || hasInterpretValuesChanged()) )
+   {
+      m_bitViewerData.generateOutputData(hasInputValueChanged() || b_forceUpdate);
+      if(m_bitViewerData.m_OutAscii)
+      {
+         m_bitViewerData.outputAsciiDataToStr();
+      }
+      else if(m_bitViewerData.m_OutBase64)
+      {
+         m_bitViewerData.outputBase64DataToStr();
+      }
+      else
+      {
+         m_bitViewerData.outputDataToStr();
+      }
 
-        for(int i = 0; i < GUI_END; ++i)
-        {
-            m_guiObjs[i]->outputUpdated();
-        }
-    }
+      for(int i = 0; i < GUI_END; ++i)
+      {
+         m_guiObjs[i]->outputUpdated();
+      }
+   }
 }

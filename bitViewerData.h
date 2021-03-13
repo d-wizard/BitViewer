@@ -1,4 +1,4 @@
-/* Copyright 2012 - 2018 Dan Williams. All Rights Reserved.
+/* Copyright 2012 - 2018, 2021 Dan Williams. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -32,10 +32,12 @@ public:
         m_OutBitsPer    (8),
         m_OutBitShift   (0),
         m_NumRows       (0),
+        m_InBase64      (false),
         m_InAscii       (false),
         m_InSigned      (false),
         m_InByteRev     (false),
         m_InBitRev      (false),
+        m_OutBase64     (false),
         m_OutAscii      (false),
         m_OutSigned     (false),
         m_OutByteRev    (false),
@@ -62,6 +64,7 @@ public:
     void generateOutputData(bool b_inputChanged);
     void outputDataToStr();
     void outputAsciiDataToStr();
+    void outputBase64DataToStr();
 
     QString m_Input;
     QString m_Delimiter;
@@ -72,10 +75,12 @@ public:
     int m_OutBitsPer;
     int m_OutBitShift;
     int m_NumRows;
+    bool m_InBase64;
     bool m_InAscii;
     bool m_InSigned;
     bool m_InByteRev;
     bool m_InBitRev;
+    bool m_OutBase64;
     bool m_OutAscii;
     bool m_OutSigned;
     bool m_OutByteRev;

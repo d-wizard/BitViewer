@@ -1,4 +1,4 @@
-/* Copyright 2012 - 2018 Dan Williams. All Rights Reserved.
+/* Copyright 2012 - 2018, 2021 Dan Williams. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -48,10 +48,12 @@ static const std::string INI_TAB_OUT_BASE       = "TabOutBase";
 static const std::string INI_TAB_OUT_BITS_PER   = "TabOutBitsPer";
 static const std::string INI_TAB_OUT_BIT_SHIFT  = "TabOutBitShift";
 static const std::string INI_TAB_NUM_ROWS       = "TabNumRows";
+static const std::string INI_TAB_IN_BASE64      = "TabInBase64";
 static const std::string INI_TAB_IN_ASCII       = "TabInAscii";
 static const std::string INI_TAB_IN_SIGNED      = "TabInSigned";
 static const std::string INI_TAB_IN_BYTE_REV    = "TabInByteRev";
 static const std::string INI_TAB_IN_BIT_REV     = "TabInBitRev";
+static const std::string INI_TAB_OUT_BASE64     = "TabOutBase64";
 static const std::string INI_TAB_OUT_ASCII      = "TabOutAscii";
 static const std::string INI_TAB_OUT_SIGNED     = "TabOutSigned";
 static const std::string INI_TAB_OUT_BYTE_REV   = "TabOutByteRev";
@@ -227,10 +229,12 @@ void writeTabToIni(std::string t_iniPath, UINT_32 i_tabNum, const std::string& t
     t_tabText.append(writeIniInt (INI_TAB_OUT_BITS_PER  , t_bitViewerData.m_OutBitsPer  ));
     t_tabText.append(writeIniInt (INI_TAB_OUT_BIT_SHIFT , t_bitViewerData.m_OutBitShift ));
     t_tabText.append(writeIniInt (INI_TAB_NUM_ROWS      , t_bitViewerData.m_NumRows     ));
+    t_tabText.append(writeIniBool(INI_TAB_IN_BASE64     , t_bitViewerData.m_InBase64    ));
     t_tabText.append(writeIniBool(INI_TAB_IN_ASCII      , t_bitViewerData.m_InAscii     ));
     t_tabText.append(writeIniBool(INI_TAB_IN_SIGNED     , t_bitViewerData.m_InSigned    ));
     t_tabText.append(writeIniBool(INI_TAB_IN_BYTE_REV   , t_bitViewerData.m_InByteRev   ));
     t_tabText.append(writeIniBool(INI_TAB_IN_BIT_REV    , t_bitViewerData.m_InBitRev    ));
+    t_tabText.append(writeIniBool(INI_TAB_OUT_BASE64    , t_bitViewerData.m_OutBase64    ));
     t_tabText.append(writeIniBool(INI_TAB_OUT_ASCII     , t_bitViewerData.m_OutAscii    ));
     t_tabText.append(writeIniBool(INI_TAB_OUT_SIGNED    , t_bitViewerData.m_OutSigned   ));
     t_tabText.append(writeIniBool(INI_TAB_OUT_BYTE_REV  , t_bitViewerData.m_OutByteRev  ));
@@ -322,10 +326,12 @@ BitViewerData getTabBitViewerDataFromIni(std::string t_iniPath, UINT_32 i_tabNum
         t_bitViewerData.m_OutBitsPer   = readIniInt (INI_TAB_OUT_BITS_PER  , t_tabText);
         t_bitViewerData.m_OutBitShift  = readIniInt (INI_TAB_OUT_BIT_SHIFT , t_tabText);
         t_bitViewerData.m_NumRows      = readIniInt (INI_TAB_NUM_ROWS      , t_tabText);
+        t_bitViewerData.m_InBase64     = readIniBool(INI_TAB_IN_BASE64     , t_tabText);
         t_bitViewerData.m_InAscii      = readIniBool(INI_TAB_IN_ASCII      , t_tabText);
         t_bitViewerData.m_InSigned     = readIniBool(INI_TAB_IN_SIGNED     , t_tabText);
         t_bitViewerData.m_InByteRev    = readIniBool(INI_TAB_IN_BYTE_REV   , t_tabText);
         t_bitViewerData.m_InBitRev     = readIniBool(INI_TAB_IN_BIT_REV    , t_tabText);
+        t_bitViewerData.m_OutBase64    = readIniBool(INI_TAB_OUT_BASE64    , t_tabText);
         t_bitViewerData.m_OutAscii     = readIniBool(INI_TAB_OUT_ASCII     , t_tabText);
         t_bitViewerData.m_OutSigned    = readIniBool(INI_TAB_OUT_SIGNED    , t_tabText);
         t_bitViewerData.m_OutByteRev   = readIniBool(INI_TAB_OUT_BYTE_REV  , t_tabText);
