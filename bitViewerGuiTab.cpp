@@ -1,4 +1,4 @@
-/* Copyright 2012 - 2018, 2021 Dan Williams. All Rights Reserved.
+/* Copyright 2012 - 2018, 2021 - 2022 Dan Williams. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -138,13 +138,9 @@ void GuiTab::writeToGui()
 
 void GuiTab::generateOutput(bool b_forceUpdate)
 {
-   bool b_notSynced = syncInterpretWithGui();
-   if(b_notSynced)
-   {
-      b_notSynced = false;
-   }
-   if( (m_bitViewerData.m_Delimiter.length() != 0 || m_bitViewerData.m_InAscii == true || m_bitViewerData.m_InBase64 == true) &&
-        m_bitViewerData.m_Input.length() != 0 &&
+   syncInterpretWithGui();
+
+   if( m_bitViewerData.m_Input.length() != 0 &&
        (b_forceUpdate || hasInputValueChanged() || hasInterpretValuesChanged()) )
    {
       m_bitViewerData.generateOutputData(hasInputValueChanged() || b_forceUpdate);

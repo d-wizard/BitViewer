@@ -1,4 +1,4 @@
-/* Copyright 2012 - 2018, 2021 Dan Williams. All Rights Reserved.
+/* Copyright 2012 - 2018, 2021 - 2022 Dan Williams. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -98,7 +98,16 @@ void BitViewerData::generateOutputData(bool b_inputChanged)
             m_Delimiter.toStdString()) );
       }
 
-      QStringList inValues = inText.split(m_Delimiter, Qt::SkipEmptyParts);
+      // If no delimiter, have just 1 inValues (i.e. the entire string).
+      QStringList inValues;
+      if(m_Delimiter.length() > 0)
+      {
+         inValues = inText.split(m_Delimiter, Qt::SkipEmptyParts);
+      }
+      else
+      {
+         inValues.append(inText);
+      }
 
       // Input
       i_numInValues = inValues.count();
