@@ -236,7 +236,7 @@
             </sizepolicy>
            </property>
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A negative bit shift will remove input bits.&lt;/p&gt;&lt;p&gt;A positive bit shift appends 0's to the input bits.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A negative bit shift will remove input bits.&lt;/p&gt;&lt;p&gt;A positive bit shift prepend 0's to the input bits.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="minimum">
             <number>-32768</number>
