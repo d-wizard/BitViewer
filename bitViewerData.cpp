@@ -54,158 +54,158 @@ static const char BASE64_TO_ASCII[64] = {
 
 void BitViewerData::generateOutputData(bool b_inputChanged)
 {
-    UINT_32 i_index;
-    UINT_32 i_numInValues;
+   UINT_32 i_index;
+   UINT_32 i_numInValues;
 
-    if(m_InAscii || m_InBase64)
-    {
-        std::string inText = m_Input.toStdString();
-        const char* pc_inText = inText.c_str();
-        m_ioDataIn.clear();
-        if(m_InBase64)
-        {
-           for(i_index = 0; i_index < inText.size(); ++i_index)
-           {
-               m_ioDataIn.push_back(ASCII_TO_BASE64[(unsigned)pc_inText[i_index]]);
-           }
-        }
-        else
-        {
-           for(i_index = 0; i_index < inText.size(); ++i_index)
-           {
-               m_ioDataIn.push_back(pc_inText[i_index]);
-           }
-        }
-    }
-    else
-    {
-        QString inText = m_Input;
-        if(m_LineEndDelim == true)
-        {
-           if( m_Delimiter != "\r" &&
-               m_Delimiter != "\n" &&
-               m_Delimiter != "\r\n" )
-           {
-               inText = inText.replace("\r\n", m_Delimiter);
-               inText = inText.replace("\n", m_Delimiter);
-               inText = inText.replace("\r", m_Delimiter);
-           }
-        }
-        if(b_inputChanged)
-        {
-           inText = QString::fromStdString( removeNonDelimiterChars(
-               inText.toStdString(),
-               m_Delimiter.toStdString()) );
-        }
+   if(m_InAscii || m_InBase64)
+   {
+      std::string inText = m_Input.toStdString();
+      const char* pc_inText = inText.c_str();
+      m_ioDataIn.clear();
+      if(m_InBase64)
+      {
+         for(i_index = 0; i_index < inText.size(); ++i_index)
+         {
+            m_ioDataIn.push_back(ASCII_TO_BASE64[(unsigned)pc_inText[i_index]]);
+         }
+      }
+      else
+      {
+         for(i_index = 0; i_index < inText.size(); ++i_index)
+         {
+            m_ioDataIn.push_back(pc_inText[i_index]);
+         }
+      }
+   }
+   else
+   {
+      QString inText = m_Input;
+      if(m_LineEndDelim == true)
+      {
+         if( m_Delimiter != "\r" &&
+            m_Delimiter != "\n" &&
+            m_Delimiter != "\r\n" )
+         {
+            inText = inText.replace("\r\n", m_Delimiter);
+            inText = inText.replace("\n", m_Delimiter);
+            inText = inText.replace("\r", m_Delimiter);
+         }
+      }
+      if(b_inputChanged)
+      {
+         inText = QString::fromStdString( removeNonDelimiterChars(
+            inText.toStdString(),
+            m_Delimiter.toStdString()) );
+      }
 
-        QStringList inValues = inText.split(m_Delimiter, Qt::SkipEmptyParts);
+      QStringList inValues = inText.split(m_Delimiter, Qt::SkipEmptyParts);
 
-        // Input
-        i_numInValues = inValues.count();
-        m_ioDataIn.clear();
-        for(i_index = 0; i_index < i_numInValues; ++i_index)
-        {
-            m_ioDataIn.push_back( asciiToInt(inValues[i_index].toStdString(),
-                                             m_InBase,
-                                             m_InSigned) );
+      // Input
+      i_numInValues = inValues.count();
+      m_ioDataIn.clear();
+      for(i_index = 0; i_index < i_numInValues; ++i_index)
+      {
+         m_ioDataIn.push_back( asciiToInt(inValues[i_index].toStdString(),
+                                          m_InBase,
+                                          m_InSigned) );
 
-        }
+      }
 
-    }
-
-
-    ToBitVector(m_bitData, m_ioDataIn, m_InBitsPer);
-
-    m_inNumValues = m_ioDataIn.size();
-    m_inNumBits = m_bitData.size();
-
-    if(m_InByteRev)
-    {
-        ByteSwap(m_bitData, m_InBitsPer, m_InSigned);
-    }
-
-    if(m_InBitRev)
-    {
-        BitSwap(m_bitData, m_InBitsPer);
-    }
-\
-    BitShift(m_bitData, m_InBitShift);
-
-    // Middle
-
-    // Output
-    BitShift(m_bitData, m_OutBitShift);
+   }
 
 
-    if(m_OutBitRev)
-    {
-        BitSwap(m_bitData, m_OutBitsPer);
-    }
+   ToBitVector(m_bitData, m_ioDataIn, m_InBitsPer);
 
-    if(m_OutByteRev)
-    {
-        ByteSwap(m_bitData, m_OutBitsPer, m_OutSigned);
-    }
+   m_inNumValues = m_ioDataIn.size();
+   m_inNumBits = m_bitData.size();
 
-    // Invert
-    if(m_BitInvert)
-    {
-        bitData::iterator i_bitIter;
+   if(m_InByteRev)
+   {
+      ByteSwap(m_bitData, m_InBitsPer, m_InSigned);
+   }
 
-        for(i_bitIter = m_bitData.begin(); i_bitIter != m_bitData.end(); ++i_bitIter)
-        {
-            (*i_bitIter) ^= 1;
-        }
-    }
+   if(m_InBitRev)
+   {
+      BitSwap(m_bitData, m_InBitsPer);
+   }
 
-    m_ioDataOut.clear();
-    FromBitVector(m_ioDataOut, m_bitData, m_OutBitsPer, m_OutSigned);
+   BitShift(m_bitData, m_InBitShift);
 
-    m_outNumValues = m_ioDataOut.size();
-    m_outNumBits = m_bitData.size();
+   // Middle
+
+   // Output
+   BitShift(m_bitData, m_OutBitShift);
+
+
+   if(m_OutBitRev)
+   {
+      BitSwap(m_bitData, m_OutBitsPer);
+   }
+
+   if(m_OutByteRev)
+   {
+      ByteSwap(m_bitData, m_OutBitsPer, m_OutSigned);
+   }
+
+   // Invert
+   if(m_BitInvert)
+   {
+      bitData::iterator i_bitIter;
+
+      for(i_bitIter = m_bitData.begin(); i_bitIter != m_bitData.end(); ++i_bitIter)
+      {
+         (*i_bitIter) ^= 1;
+      }
+   }
+
+   m_ioDataOut.clear();
+   FromBitVector(m_ioDataOut, m_bitData, m_OutBitsPer, m_OutSigned);
+
+   m_outNumValues = m_ioDataOut.size();
+   m_outNumBits = m_bitData.size();
 
 }
 
 void BitViewerData::outputAsciiDataToStr()
 {
-    int outSize = m_ioDataOut.size();
-    char* outText = new char[outSize + 1];
-    bool nonNullByteWritten = false;
-    outText[outSize] = '\0';
-    int i_index = 0;
-    for(ioData::iterator outValues = m_ioDataOut.begin(); outValues != m_ioDataOut.end(); ++outValues)
-    {
-        if(nonNullByteWritten || (*outValues & 0xFF))
-        {
-            outText[i_index++] = (*outValues & 0xFF);
-            nonNullByteWritten = true;
-        }
-    }
-    outText[i_index] = '\0';
-    m_outputText = QString::fromStdString(outText);
+   int outSize = m_ioDataOut.size();
+   char* outText = new char[outSize + 1];
+   bool nonNullByteWritten = false;
+   outText[outSize] = '\0';
+   int i_index = 0;
+   for(ioData::iterator outValues = m_ioDataOut.begin(); outValues != m_ioDataOut.end(); ++outValues)
+   {
+      if(nonNullByteWritten || (*outValues & 0xFF))
+      {
+         outText[i_index++] = (*outValues & 0xFF);
+         nonNullByteWritten = true;
+      }
+   }
+   outText[i_index] = '\0';
+   m_outputText = QString::fromStdString(outText);
 
-    delete [] outText;
+   delete [] outText;
 }
 
 void BitViewerData::outputBase64DataToStr()
 {
-    int outSize = m_ioDataOut.size();
-    char* outText = new char[outSize + 1];
-    bool nonNullByteWritten = false;
-    outText[outSize] = '\0';
-    int i_index = 0;
-    for(ioData::iterator outValues = m_ioDataOut.begin(); outValues != m_ioDataOut.end(); ++outValues)
-    {
-        if(nonNullByteWritten || (*outValues & 0x3F))
-        {
-            outText[i_index++] = BASE64_TO_ASCII[(*outValues & 0x3F)];
-            nonNullByteWritten = true;
-        }
-    }
-    outText[i_index] = '\0';
-    m_outputText = QString::fromStdString(outText);
+   int outSize = m_ioDataOut.size();
+   char* outText = new char[outSize + 1];
+   bool nonNullByteWritten = false;
+   outText[outSize] = '\0';
+   int i_index = 0;
+   for(ioData::iterator outValues = m_ioDataOut.begin(); outValues != m_ioDataOut.end(); ++outValues)
+   {
+      if(nonNullByteWritten || (*outValues & 0x3F))
+      {
+         outText[i_index++] = BASE64_TO_ASCII[(*outValues & 0x3F)];
+         nonNullByteWritten = true;
+      }
+   }
+   outText[i_index] = '\0';
+   m_outputText = QString::fromStdString(outText);
 
-    delete [] outText;
+   delete [] outText;
 }
 
 void BitViewerData::outputDataToStr()
