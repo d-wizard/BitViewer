@@ -1,4 +1,4 @@
-/* Copyright 2012 - 2018, 2021 Dan Williams. All Rights Reserved.
+/* Copyright 2012 - 2018, 2021, 2023 Dan Williams. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -89,7 +89,46 @@ static std::string writeIniBool(const std::string& t_delim, const bool b_val)
     return ss.str();
 }
 
-static int readIniInt(const std::string& t_delim, std::string t_iniText)
+static void addOrOverrideToIni(std::string& t_iniText, const std::string& curIniText, const std::string& newIniText)
+{
+    if(dString::InStr(t_iniText, curIniText) >= 0)
+    {
+        // There is already an entry. Replace it with the new text.
+        t_iniText = dString::Replace(t_iniText, curIniText, newIniText);
+    }
+    else
+    {
+        // No entry exists, add to the beginning.
+        t_iniText = newIniText + t_iniText;
+    }
+}
+
+void writeIniInt(const std::string& t_delim, const int i_val, std::string& t_iniText)
+{
+    // Add / override entry in ini.
+    auto origVal = readIniInt(t_delim, t_iniText);
+    auto curIniText = writeIniInt(t_delim, origVal);
+    auto newIniText = writeIniInt(t_delim, i_val);
+    addOrOverrideToIni(t_iniText, curIniText, newIniText);
+}
+void writeIniStr(const std::string& t_delim, const std::string& t_val, std::string& t_iniText)
+{
+    // Add / override entry in ini.
+    auto origVal = readIniStr(t_delim, t_iniText);
+    auto curIniText = writeIniStr(t_delim, origVal);
+    auto newIniText = writeIniStr(t_delim, t_val);
+    addOrOverrideToIni(t_iniText, curIniText, newIniText);
+}
+void writeIniBool(const std::string& t_delim, const bool b_val, std::string& t_iniText)
+{
+    // Add / override entry in ini.
+    auto origVal = readIniBool(t_delim, t_iniText);
+    auto curIniText = writeIniBool(t_delim, origVal);
+    auto newIniText = writeIniBool(t_delim, b_val);
+    addOrOverrideToIni(t_iniText, curIniText, newIniText);
+}
+
+int readIniInt(const std::string& t_delim, std::string t_iniText)
 {
     std::string t_searchStart("");
     std::string t_searchEnd("");
@@ -100,7 +139,7 @@ static int readIniInt(const std::string& t_delim, std::string t_iniText)
     t_strReturn = dString::GetMiddle(&t_iniText, t_searchStart, t_searchEnd);
     return asciiToInt(t_strReturn, 10, true);
 }
-static std::string readIniStr(const std::string& t_delim, std::string t_iniText)
+std::string readIniStr(const std::string& t_delim, std::string t_iniText)
 {
     std::string t_searchStart("");
     std::string t_searchEnd("");
@@ -109,7 +148,7 @@ static std::string readIniStr(const std::string& t_delim, std::string t_iniText)
     t_searchEnd.append(INI_END_OPEN).append(t_delim).append(INI_END_CLOSE);
     return dString::GetMiddle(&t_iniText, t_searchStart, t_searchEnd);
 }
-static bool readIniBool(const std::string& t_delim, std::string t_iniText)
+bool readIniBool(const std::string& t_delim, std::string t_iniText)
 {
     std::string t_searchStart("");
     std::string t_searchEnd("");

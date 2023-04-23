@@ -1,4 +1,4 @@
-/* Copyright 2012 - 2018 Dan Williams. All Rights Reserved.
+/* Copyright 2012 - 2018, 2023 Dan Williams. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -36,6 +36,15 @@ typedef struct
     eIniType e_type;
     void* p_param;
 }tIniParam;
+
+
+void writeIniInt(const std::string& t_delim, const int i_val, std::string& t_iniText);
+void writeIniStr(const std::string& t_delim, const std::string& t_val, std::string& t_iniText);
+void writeIniBool(const std::string& t_delim, const bool b_val, std::string& t_iniText);
+
+int readIniInt(const std::string& t_delim, std::string t_iniText);
+std::string readIniStr(const std::string& t_delim, std::string t_iniText);
+bool readIniBool(const std::string& t_delim, std::string t_iniText);
 
 void writeToIniFile(std::string t_iniPath, std::vector<tIniParam>& t_iniParams);
 void readFromIniFile(std::string t_iniPath, std::vector<tIniParam>& t_iniParams);

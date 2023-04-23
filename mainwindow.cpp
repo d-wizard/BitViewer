@@ -1,4 +1,4 @@
-/* Copyright 2012 - 2018, 2021 Dan Williams. All Rights Reserved.
+/* Copyright 2012 - 2018, 2021, 2023 Dan Williams. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -37,6 +37,8 @@
 #include <fstream>
 #include "bitStreamCompare.h"
 #include <QClipboard>
+
+#define INI_FILE_PATH "BitViewer.ini"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -136,7 +138,7 @@ MainWindow::MainWindow(QWidget *parent) :
     addIniParamToVector(m_iniParams, "AutoDelim"   , INI_CHECK_BOX, ui->chkDelimAuto);
     addIniParamToVector(m_iniParams, "LineEndDelim", INI_CHECK_BOX, ui->chkLineEndDelim);
 
-    readFromIniFile("BitViewer.ini", m_iniParams);
+    readFromIniFile(INI_FILE_PATH, m_iniParams);
 
     connect(ui->actionAdd_Tab, SIGNAL(triggered(bool)), this, SLOT(AddBitViewerTab()));
     connect(ui->actionCompare_Tabs, SIGNAL(triggered(bool)), this, SLOT(CompareTabs()));
@@ -156,11 +158,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
     syncGuiTab();
 
-    UINT_32 i_numTabsFromIni = getNumGuiTabsFromIni("BitViewer.ini");
+    UINT_32 i_numTabsFromIni = getNumGuiTabsFromIni(INI_FILE_PATH);
     for(UINT_32 i = 0; i < i_numTabsFromIni; ++i)
     {
-        QString t_tabName = QString::fromStdString(getTabNameFromIni("BitViewer.ini", i));
-        BitViewerData t_bitViewerData = getTabBitViewerDataFromIni("BitViewer.ini", i);
+        QString t_tabName = QString::fromStdString(getTabNameFromIni(INI_FILE_PATH, i));
+        BitViewerData t_bitViewerData = getTabBitViewerDataFromIni(INI_FILE_PATH, i);
         if( (i + 1) > m_guiTabs.size() )
         {
             m_guiTabs.push_back( new BitViewerGuiTab( ui->tabWidget,
@@ -187,7 +189,7 @@ MainWindow::MainWindow(QWidget *parent) :
     }
     else
     {
-        i_curTab = getActiveTabFromIni("BitViewer.ini");
+        i_curTab = getActiveTabFromIni(INI_FILE_PATH);
     }
 
     if(i_curTab < m_guiTabs.size())
@@ -212,19 +214,51 @@ MainWindow::~MainWindow()
     mp_curGuiTab = NULL;
     int i_numTabs = m_guiTabs.size();
 
-    writeToIniFile("BitViewer.ini", m_iniParams);
+    // Get values from ini before they get overwritten.
+    auto lastOpenSaveDir = getLastOpenSaveDir();
 
-    writeActiveTabToIni("BitViewer.ini", ui->tabWidget->currentIndex());
+    // Write GUI values to the ini (this will create a brand new ini file, so save everything off before this)
+    writeToIniFile(INI_FILE_PATH, m_iniParams);
+
+    writeActiveTabToIni(INI_FILE_PATH, ui->tabWidget->currentIndex());
     for(int i = 0; i < i_numTabs; ++i)
     {
-        writeTabToIni("BitViewer.ini", i, ui->tabWidget->tabText(i).toStdString(), *m_guiTabs[i]->getIoGuiTab()->getBitViewerData());
+        writeTabToIni(INI_FILE_PATH, i, ui->tabWidget->tabText(i).toStdString(), *m_guiTabs[i]->getIoGuiTab()->getBitViewerData());
     }
+
+    // Write the rest of the ini values.
+    setLastOpenSaveDir(lastOpenSaveDir);
+
     for(int i = 0; i < i_numTabs; ++i)
     {
         delete m_guiTabs[i];
     }
 
     delete ui;
+}
+
+
+std::string MainWindow::getLastOpenSaveDir()
+{
+    std::string t_iniFile = fso::ReadFile(INI_FILE_PATH);
+    return readIniStr("LastOpenSaveDir", t_iniFile);
+}
+
+void MainWindow::setLastOpenSaveDir(const std::string& directory)
+{
+    std::string t_iniFile = fso::ReadFile(INI_FILE_PATH);
+    if(fso::DirExists(directory))
+    {
+        // Valid directory. Save it.
+        writeIniStr("LastOpenSaveDir", directory, t_iniFile);
+    }
+    else
+    {
+        // This is a file. Save the directory this file is in.
+        std::string upDir = fso::GetDir(directory);
+        writeIniStr("LastOpenSaveDir", upDir, t_iniFile);
+    }
+    fso::WriteFile(INI_FILE_PATH, t_iniFile);
 }
 
 void MainWindow::printOutputToGui()
@@ -448,65 +482,75 @@ void MainWindow::CopyOutputForExcel()
 
 void MainWindow::ReadInputFromBinaryFile()
 {
+    std::string oldDir = getLastOpenSaveDir();
+    QString startDir = fso::DirExists(oldDir) ? oldDir.c_str() : QDir::currentPath();
+
     QString filename = QFileDialog::getOpenFileName(
         this,
         tr("Open Binary File"),
-        QDir::currentPath(),
+        startDir,
         tr("All files (*.*)") );
     if( filename.isNull() )
     {
        return;
     }
 
-   int length;
-   unsigned char* buffer;
+    setLastOpenSaveDir(filename.toStdString()); // Save the path the user specified.
 
-   std::ifstream is;
-   is.open(filename.toStdString().c_str(), std::ios::binary );
+    int length;
+    unsigned char* buffer;
 
-   // get length of file:
-   is.seekg (0, std::ios::end);
-   length = is.tellg();
-   is.seekg (0, std::ios::beg);
+    std::ifstream is;
+    is.open(filename.toStdString().c_str(), std::ios::binary );
 
-   // allocate memory:
-   buffer = new unsigned char [length];
+    // get length of file:
+    is.seekg (0, std::ios::end);
+    length = is.tellg();
+    is.seekg (0, std::ios::beg);
 
-   // read data as a block:
-   is.read ((char*)buffer,length);
-   is.close();
+    // allocate memory:
+    buffer = new unsigned char [length];
 
-   ++m_readyToPrint;
-   {
-       int i_index = 0;
-       std::string inputTxt = "";
-       for(i_index = 0; i_index < length; ++i_index)
-       {
-           inputTxt.append(intToAscii(buffer[i_index], 16, 8, false));
-           inputTxt.append(" ");
-       }
-       ui->spnBaseIn->setValue(16);
-       ui->spnBitsPerIn->setValue(8);
-       ui->chkSignedIn->setChecked(false);
-       ui->txtInput->setText(QString::fromStdString(inputTxt));
-   }
-   --m_readyToPrint;
-   updateInput();
+    // read data as a block:
+    is.read ((char*)buffer,length);
+    is.close();
 
-   delete[] buffer;
+    ++m_readyToPrint;
+    {
+        int i_index = 0;
+        std::string inputTxt = "";
+        for(i_index = 0; i_index < length; ++i_index)
+        {
+            inputTxt.append(intToAscii(buffer[i_index], 16, 8, false));
+            inputTxt.append(" ");
+        }
+        ui->spnBaseIn->setValue(16);
+        ui->spnBitsPerIn->setValue(8);
+        ui->chkSignedIn->setChecked(false);
+        ui->txtInput->setText(QString::fromStdString(inputTxt));
+    }
+    --m_readyToPrint;
+    updateInput();
+
+    delete[] buffer;
 
 }
 void MainWindow::ReadInputFromAsciiFile()
 {
+    std::string oldDir = getLastOpenSaveDir();
+    QString startDir = fso::DirExists(oldDir) ? oldDir.c_str() : QDir::currentPath();
+
     QString filename = QFileDialog::getOpenFileName(
         this,
         tr("Open ACSII File"),
-        QDir::currentPath(),
+        startDir,
         tr("All files (*.*)") );
     if( filename.isNull() )
     {
        return;
     }
+
+    setLastOpenSaveDir(filename.toStdString()); // Save the path the user specified.
 
     std::string winFormatPath = QString::fromStdString(filename.toStdString()).replace("/", "\\").toStdString();
     ++m_readyToPrint;
@@ -520,15 +564,20 @@ void MainWindow::WriteOutputToBinaryFile()
 {
     if(mp_curGuiTab != NULL)
     {
+        std::string oldDir = getLastOpenSaveDir();
+        QString startDir = fso::DirExists(oldDir) ? oldDir.c_str() : QDir::currentPath();
+
         QString filename = QFileDialog::getSaveFileName(
             this,
             tr("Save Binary Path"),
-            QDir::currentPath(),
+            startDir,
             tr("All files (*.*)") );
         if( filename.isNull() )
         {
            return;
         }
+
+        setLastOpenSaveDir(filename.toStdString()); // Save the path the user specified.
 
         ioData* t_outputData = mp_curGuiTab->getIoGuiTab()->getOutputData();
         std::string t_outFilePath = filename.toStdString();
@@ -553,15 +602,20 @@ void MainWindow::WriteOutputToBinaryFile()
 
 void MainWindow::WriteOutputToAsciiFile()
 {
+    std::string oldDir = getLastOpenSaveDir();
+    QString startDir = fso::DirExists(oldDir) ? oldDir.c_str() : QDir::currentPath();
+
     QString filename = QFileDialog::getSaveFileName(
         this,
         tr("Save ASCII Path"),
-        QDir::currentPath(),
+        startDir,
         tr("All files (*.*)") );
     if( filename.isNull() )
     {
        return;
     }
+
+    setLastOpenSaveDir(filename.toStdString()); // Save the path the user specified.
 
     fso::WriteFile(filename.toStdString(), ui->txtOutput->toPlainText().toStdString());
 
@@ -1049,8 +1103,6 @@ void MainWindow::on_chkLineEndDelim_stateChanged(int arg1)
     (void)arg1;
     updateOutputOnChange(GUI_LINE_END_DELIM);
 }
-
-
 
 
 #if 0
