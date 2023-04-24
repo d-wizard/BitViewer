@@ -1,4 +1,4 @@
-/* Copyright 2012 - 2018 Dan Williams. All Rights Reserved.
+/* Copyright 2012 - 2018, 2023 Dan Williams. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -18,8 +18,11 @@
  */
 #include "tabcomparedialog.h"
 #include "ui_tabcomparedialog.h"
-
 #include "mainwindow.h"
+#include "BitViewerIni.h"
+#include "FileSystemOperations.h"
+
+#define INI_FILE_PATH "BitViewer.ini"
 
 TabCompareDialog::TabCompareDialog(QWidget *parent) :
     QDialog(parent),
@@ -36,18 +39,55 @@ TabCompareDialog::~TabCompareDialog()
 
 void TabCompareDialog::showTabCompare(std::vector<BitViewerGuiTab*>& bitViewerTabs, MainWindow* p_parentUi)
 {
+    // Try to get the previous compare tabs
+    std::string iniFile = fso::ReadFile(INI_FILE_PATH);
+    QString dstFromIni(readIniStr("TabCompareDst", iniFile).c_str());
+    QString srcFromIni(readIniStr("TabCompareSrc", iniFile).c_str());
+
+    int index = 0;
+    int dstTabToUse = -1;
+    int srcTabToUse = -1;
+
     m_parentUi = p_parentUi;
     ui->cmbCompareDst->clear();
+    ui->cmbCompareSrc->clear();
+
+    index = 0;
     for(std::vector<BitViewerGuiTab*>::iterator iter = bitViewerTabs.begin(); iter != bitViewerTabs.end(); ++iter)
     {
-        ui->cmbCompareDst->addItem((*iter)->getTabName());
+        QString curTabName = (*iter)->getTabName();
+        ui->cmbCompareDst->addItem(curTabName);
+        if(dstTabToUse < 0 || dstFromIni == curTabName)
+        {
+            dstTabToUse = index;
+        }
+        ++index;
     }
 
-    ui->cmbCompareSrc->clear();
+    index = 0;
     for(std::vector<BitViewerGuiTab*>::iterator iter = bitViewerTabs.begin(); iter != bitViewerTabs.end(); ++iter)
     {
-        ui->cmbCompareSrc->addItem((*iter)->getTabName());
+        QString curTabName = (*iter)->getTabName();
+        ui->cmbCompareSrc->addItem(curTabName);
+
+        // No point in comparing the same 2 tabs, so don't auto fill with the same as dst.
+        if((srcTabToUse < 0 && dstTabToUse != index) || srcFromIni == curTabName)
+        {
+            srcTabToUse = index;
+        }
+        ++index;
     }
+
+    // Got to fill with something, so make it match dst if src was never filled in.
+    if(srcTabToUse < 0)
+    {
+        srcTabToUse = dstTabToUse;
+    }
+
+    if(dstTabToUse >= 0)
+       ui->cmbCompareDst->setCurrentIndex(dstTabToUse);
+    if(srcTabToUse >= 0)
+       ui->cmbCompareSrc->setCurrentIndex(srcTabToUse);
 
     this->show();
 }
@@ -58,6 +98,15 @@ void TabCompareDialog::on_buttonBox_accepted()
     {
         m_parentUi->compareTabs_Finished(ui->cmbCompareDst->currentIndex(), ui->cmbCompareSrc->currentIndex());
     }
+
+    // Write the current tabs to the ini file.
+    std::string iniFile = fso::ReadFile(INI_FILE_PATH);
+    std::string dst = ui->cmbCompareDst->currentText().toStdString();
+    std::string src = ui->cmbCompareSrc->currentText().toStdString();
+    writeIniStr("TabCompareDst", dst, iniFile);
+    writeIniStr("TabCompareSrc", src, iniFile);
+    fso::WriteFile(INI_FILE_PATH, iniFile);
+
     this->hide();
     m_parentUi = NULL;
 }
