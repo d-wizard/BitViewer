@@ -319,14 +319,7 @@ void MainWindow::syncGuiTab()
     if(mp_curGuiTab != NULL && m_guiTabs.size() > 0)
     {
         mp_curGuiTab = m_guiTabs[ui->tabWidget->currentIndex()];
-        if(m_guiTabs.size() < 2)
-        {
-            ui->tabWidget->setVisible(false);
-        }
-        else
-        {
-            ui->tabWidget->setVisible(true);
-        }
+        ui->tabWidget->setVisible(true); // Always show the tab widget (in the past it was only shown if there were more than 1 tab)
     }
     else
     {
@@ -428,31 +421,42 @@ void MainWindow::on_tabWidget_tabCloseRequested(int index)
 {
     if(mp_curGuiTab != NULL)
     {
-        QMessageBox msgBox;
-        msgBox.setWindowTitle("Delete Tab");
-        msgBox.setText("Do you want to delete this tab?");
-        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-        msgBox.setDefaultButton(QMessageBox::No);
-        switch( msgBox.exec() )
+        if(m_guiTabs.size() > 1)
         {
-            case QMessageBox::Yes:
-                ++m_ignorGuiChange;
-                ui->tabWidget->removeTab(index);
-                delete m_guiTabs[index];
-                m_guiTabs.erase(m_guiTabs.begin() + index);
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("Delete Tab");
+            msgBox.setText("Do you want to delete this tab?");
+            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            msgBox.setDefaultButton(QMessageBox::Yes);
+            switch( msgBox.exec() )
+            {
+                case QMessageBox::Yes:
+                    ++m_ignorGuiChange;
+                    ui->tabWidget->removeTab(index);
+                    delete m_guiTabs[index];
+                    m_guiTabs.erase(m_guiTabs.begin() + index);
 
-                syncGuiTab();
+                    syncGuiTab();
 
-                ++m_ignorTabChange;
-                mp_curGuiTab->getIoGuiTab()->writeToGui();
-                --m_ignorTabChange;
+                    ++m_ignorTabChange;
+                    mp_curGuiTab->getIoGuiTab()->writeToGui();
+                    --m_ignorTabChange;
 
-                updateForce();
-                --m_ignorGuiChange;
-            break;
-            case QMessageBox::No:
+                    updateForce();
+                    --m_ignorGuiChange;
+                break;
+                case QMessageBox::No:
 
-            break;
+                break;
+            }
+        }
+        else
+        {
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("Delete Tab");
+            msgBox.setText("Can't delete the last tab. There needs to be at least 1 tab.");
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.exec();
         }
     }
 }
