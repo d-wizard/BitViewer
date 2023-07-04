@@ -365,6 +365,7 @@ void MainWindow::AddBitViewerTab()
                                                       *mp_curGuiTab->getIoGuiTab()->getBitViewerData(),
                                                       QString::fromStdString(tabname) ) );
             //--m_ignorTabChange;
+            ui->tabWidget->setCurrentIndex(m_guiTabs.size()-1); // Set to the newly created tab.
             syncGuiTab();
             updateForce();
             --m_ignorGuiChange;
