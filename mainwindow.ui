@@ -728,7 +728,7 @@
       <item>
        <widget class="QLineEdit" name="txtInput">
         <property name="maxLength">
-         <number>1000000</number>
+         <number>1000000000</number>
         </property>
        </widget>
       </item>
