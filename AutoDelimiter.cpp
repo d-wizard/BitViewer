@@ -103,24 +103,71 @@ std::string getDelimiter(const std::string& t_dataToParse)
 std::string removeNonDelimiterChars(const std::string& t_dataToParse, const std::string& t_delimit)
 {
    std::string retVal = t_dataToParse;
-   int i_numDeletedChar = 0;
+   int writeIndex = 0;
    
    const char* pc_data = t_dataToParse.c_str();
    int i_numChr = t_dataToParse.length();
-   unsigned char c_curChar = '\0';
-   
+   const char* pc_delim = t_delimit.c_str();
    int i_numDelimChr = t_delimit.length();
-   
-   for(int i = 0; i < i_numChr; ++i)
+
+   if(i_numDelimChr > 1)
    {
-      c_curChar = pc_data[i];
-      if( !VALID_INPUT_CHAR[c_curChar] &&
-          dString::Mid(t_dataToParse, i, i_numDelimChr) != t_delimit )
+      for(int i = 0; i <= (i_numChr-i_numDelimChr); ++i)
       {
-         retVal = dString::Left(retVal, i-i_numDeletedChar).append(dString::Mid(retVal, i-i_numDeletedChar+1));
-         ++i_numDeletedChar;
+         unsigned char c_curChar = pc_data[i];
+         bool isDelim = (memcmp(pc_data+i, pc_delim, i_numDelimChr) == 0);
+
+         if(isDelim)
+         {
+            for(int j = 0; j < i_numDelimChr; ++j)
+            {
+               retVal[writeIndex++] = pc_data[i+j];
+            }
+            i += (i_numDelimChr-1); // Skip past all other delimiter characters.
+         }
+         else if( VALID_INPUT_CHAR[c_curChar] )
+         {
+            retVal[writeIndex++] = c_curChar;
+         }
       }
    }
+   else if(i_numDelimChr == 1)
+   {
+      for(int i = 0; i <= (i_numChr-i_numDelimChr); ++i)
+      {
+         unsigned char c_curChar = pc_data[i];
+         bool isDelim = (pc_data[i] == pc_delim[0]);
+
+         if( VALID_INPUT_CHAR[c_curChar] || isDelim )
+         {
+            retVal[writeIndex++] = c_curChar;
+         }
+      }
+   }
+   else if(i_numDelimChr == 0)
+   {
+      for(int i = 0; i <= (i_numChr-i_numDelimChr); ++i)
+      {
+         unsigned char c_curChar = pc_data[i];
+         if( VALID_INPUT_CHAR[c_curChar] )
+         {
+            retVal[writeIndex++] = c_curChar;
+         }
+      }
+   }
+
+   // Write any left over characters.
+   for(int i = (i_numChr-i_numDelimChr+1); i < i_numChr; ++i)
+   {
+      unsigned char c_curChar = pc_data[i];
+      if( VALID_INPUT_CHAR[c_curChar] )
+      {
+         retVal[writeIndex++] = c_curChar;
+      }
+   }
+
+
+   retVal.resize(writeIndex);
    return retVal;
 }
 
