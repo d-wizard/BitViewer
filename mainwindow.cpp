@@ -520,6 +520,12 @@ void MainWindow::ReadInputFromBinaryFile()
     is.read ((char*)buffer,length);
     is.close();
 
+    m_guiTabs.push_back( new BitViewerGuiTab( ui->tabWidget,
+                                              m_guiPtrs,
+                                              *mp_curGuiTab->getIoGuiTab()->getBitViewerData(),
+                                              QString::fromStdString(fso::GetFileNameNoExt(filename.toStdString())) ) );
+    ui->tabWidget->setCurrentIndex(m_guiTabs.size()-1); // Set to the newly created tab.
+
     ++m_readyToPrint;
     {
         int i_index = 0;
@@ -532,6 +538,9 @@ void MainWindow::ReadInputFromBinaryFile()
         ui->spnBaseIn->setValue(16);
         ui->spnBitsPerIn->setValue(8);
         ui->chkSignedIn->setChecked(false);
+        ui->spnBaseOut->setValue(16);
+        ui->spnBitsPerOut->setValue(8);
+        ui->chkSignedOut->setChecked(false);
         ui->txtInput->setText(QString::fromStdString(inputTxt));
     }
     --m_readyToPrint;
@@ -556,6 +565,12 @@ void MainWindow::ReadInputFromAsciiFile()
     }
 
     setLastOpenSaveDir(filename.toStdString()); // Save the path the user specified.
+
+    m_guiTabs.push_back( new BitViewerGuiTab( ui->tabWidget,
+                                              m_guiPtrs,
+                                              *mp_curGuiTab->getIoGuiTab()->getBitViewerData(),
+                                              QString::fromStdString(fso::GetFileNameNoExt(filename.toStdString())) ) );
+    ui->tabWidget->setCurrentIndex(m_guiTabs.size()-1); // Set to the newly created tab.
 
     std::string winFormatPath = QString::fromStdString(filename.toStdString()).replace("/", "\\").toStdString();
     ++m_readyToPrint;
