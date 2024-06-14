@@ -43,3 +43,6 @@ FORMS    += mainwindow.ui \
 
 win32:RC_FILE = QTBitViewer.rc
 QT += widgets
+
+RESOURCES += \
+    bitViewerResource.qrc
