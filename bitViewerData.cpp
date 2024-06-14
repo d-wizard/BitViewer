@@ -1,4 +1,4 @@
-/* Copyright 2012 - 2018, 2021 - 2022 Dan Williams. All Rights Reserved.
+/* Copyright 2012 - 2018, 2021 - 2022, 2024 Dan Williams. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -231,6 +231,9 @@ void BitViewerData::outputDataToStr()
    }
 
    INT_UMAX l_bitMask = (INT_UMAX)(((INT_UMAX)1 << (INT_UMAX)m_OutBitsPer) - (INT_UMAX)1);
+   if(m_OutBitsPer >= 64)
+      l_bitMask = -1; // Mask needs to include all the bits.
+
    UINT_32 maxChars = determineNumChars( l_bitMask, m_OutBase);
 
    if(m_OutBase == 10 && m_OutSigned)

@@ -1,4 +1,4 @@
-/* Copyright 2012 - 2018 Dan Williams. All Rights Reserved.
+/* Copyright 2012 - 2018, 2024 Dan Williams. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -90,7 +90,7 @@ static void initAsciiToIntLookup(int base)
 INT_SMAX asciiToInt(const std::string& asc, int base, bool bSigned)
 {
    INT_SMAX retVal = 0;
-   int power = 1;
+   INT_SMAX power = 1;
    const unsigned char* cAsc = (const unsigned char*)asc.c_str();
    int i = asc.length() - 1;
    

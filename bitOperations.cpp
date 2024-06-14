@@ -1,4 +1,4 @@
-/* Copyright 2012 - 2018 Dan Williams. All Rights Reserved.
+/* Copyright 2012 - 2018, 2024 Dan Williams. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -44,7 +44,9 @@ void FromBitVector(ioData& t_dest, bitData& t_src, UINT_32 i_bitsPer, bool b_sig
     ioData::iterator destItr;
     UINT_32 i_bitIndex = 0;
     UINT_32 i_outIndex = 0;
-    INT_UMAX signedMask = ((((INT_UMAX)1 << ((sizeof(INT_UMAX)*BITS_PER_BYTE) - i_bitsPer)) - 1) << i_bitsPer);
+    const INT_UMAX signedMask = ((((INT_UMAX)1 << ((sizeof(INT_UMAX)*BITS_PER_BYTE) - i_bitsPer)) - 1) << i_bitsPer); // This is used to fill MSBs to 1s for non-standard 'i_bitsPer' values (... I think)
+    const INT_UMAX destMask = (i_bitsPer >= 64) ? (INT_UMAX)-1 : ((INT_UMAX)1 << (i_bitsPer - 1));
+    const INT_UMAX ONE_UMAX = 1;
 
     t_dest.clear();
 
@@ -64,16 +66,16 @@ void FromBitVector(ioData& t_dest, bitData& t_src, UINT_32 i_bitsPer, bool b_sig
         }
         if(*srcItr)
         {
-            *destItr |= (1 << i_bitIndex);
+            *destItr |= (ONE_UMAX << i_bitIndex);
         }
         else
         {
-            *destItr &= ~(1 << i_bitIndex);
+            *destItr &= ~(ONE_UMAX << i_bitIndex);
         }
         if(++i_bitIndex == i_bitsPer)
         {
             i_bitIndex = 0;
-            if( b_signed && (*destItr & ((INT_UMAX)1 << (i_bitsPer - 1))) )
+            if( b_signed && (*destItr & destMask) )
             {
                 *destItr |= signedMask;
             }
