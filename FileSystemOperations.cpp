@@ -1,4 +1,4 @@
-/* Copyright 2011 - 2018 Dan Williams. All Rights Reserved.
+/* Copyright 2011 - 2018, 2024 Dan Williams. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -18,7 +18,6 @@
  */
 #include "FileSystemOperations.h"
 #include "dString.h"
-#include "dirent.h"
 #include <iostream>
 #include <fstream>
 #include <algorithm>
@@ -27,10 +26,12 @@
 #if (defined(_WIN32) || defined(__WIN32__))
    #define WIN_BUILD
    #include <windows.h>
+   #include "win_dirent.h"
    static const std::string DIR_SEP = "\\";
 #else
    #define LINUX_BUILD
    #include <sys/stat.h>
+   #include <dirent.h>
    static const std::string DIR_SEP = "/";
 #endif
 

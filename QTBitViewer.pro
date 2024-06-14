@@ -29,7 +29,6 @@ HEADERS  += mainwindow.h \
     bitOperations.h \
     dString.h \
     FileSystemOperations.h \
-    dirent.h \
     hist.h \
     BitViewerIni.h \
     AutoDelimiter.h \
