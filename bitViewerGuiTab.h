@@ -156,6 +156,7 @@ class GuiTab
 
     void guiValueChanged(eGuiInputObject e_obj);
     void generateOutput(bool b_forceUpdate);
+    void getInput(bool b_forceUpdate, QStringList& inValues);
     QString* getOutputText();
 
     ioData* getOutputData();

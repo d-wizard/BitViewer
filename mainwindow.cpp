@@ -35,6 +35,7 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <math.h>
 #include "bitStreamCompare.h"
 #include <QClipboard>
 
@@ -1177,3 +1178,104 @@ void MainWindow::readModType(const QString& t_modStr, e_modType& e_mod, INT_32& 
     }
 }
 #endif
+
+void MainWindow::on_cmdDetectInputFormat_clicked()
+{
+    updateInput();
+
+    // Get Input Info.
+    std::string inputStr = ui->txtInput->text().toStdString();
+    QStringList inQstrList;
+    mp_curGuiTab->getIoGuiTab()->getInput(true, inQstrList);
+    auto numInValues = inQstrList.count();
+
+    // Determine how many character are in the input text.
+    int64_t maxNumCharsPerInput = 0;
+    int64_t totalNumChars = 0;
+    for(int i = 0; i < numInValues; ++i)
+    {
+        // Remove common characters that don't contribute to the number of bits per value.
+        auto inVal = inQstrList[i];
+        inVal = inVal.replace("0x", "");
+        inVal = inVal.replace("0X", "");
+        inVal = inVal.replace("-", "");
+
+        int64_t charSize = inVal.size();
+        maxNumCharsPerInput = std::max(maxNumCharsPerInput, charSize);
+        totalNumChars += charSize;
+    }
+
+    // Determine Base
+    bool hex_0x = (inputStr.find("0x") != std::string::npos) || (inputStr.find("0X") != std::string::npos);
+    bool hex_chars = false;
+    bool dec_chars = false;
+    bool bin_chars = false;
+    bool neg_chars = false;
+    const char* inPtr = inputStr.c_str();
+    const size_t inSize = inputStr.size();
+    for(size_t i = 0; i < inSize; ++i)
+    {
+        char inChar = inPtr[i];
+        if((inChar >= 'a') && (inChar <= 'f'))
+            hex_chars = true;
+        else if((inChar >= 'A') && (inChar <= 'F'))
+            hex_chars = true;
+        else if((inChar >= '2') && (inChar <= '9'))
+            dec_chars = true;
+        else if((inChar >= '0') && (inChar <= '1'))
+            bin_chars = true;
+        else if(inChar == '-')
+            neg_chars = true;
+    }
+
+    int base = 0; // Init to invalid.
+    if(hex_0x || hex_chars)
+    {
+        base = 16;
+    }
+    else if(bin_chars && !dec_chars && (totalNumChars > 10 || numInValues > 3)) // Don't auto set to base 2 unless there are plenty of only 1:0 characters. If not assume base 10
+    {
+        base = 2;
+    }
+    else if(dec_chars || bin_chars)
+    {
+        base = 10;
+        ui->chkSignedIn->setChecked(neg_chars);
+    }
+    else
+    {
+        // Do Nothing
+    }
+
+    if(base != 0)
+    {
+        ui->spnBaseIn->setValue(base);
+
+        double maxVal = 0;
+        for(int i = 0; i < numInValues; ++i)
+        {
+            try
+            {
+               maxVal = std::max(maxVal, fabs((double)asciiToInt(inQstrList[i].toStdString(), base, neg_chars)));
+            }
+            catch (...) {}
+        }
+
+        // Next Determine Bits Per
+        // double maxVal = pow((double)base, (double)maxNumCharsPerInput); // Old, lazy way to determine max...
+        int numBitsPer = 0; // Init to invalid.
+        if(maxVal > (double)0xffffffff)
+            numBitsPer = 64;
+        else if(maxVal > (double)0xffff)
+            numBitsPer = 32;
+        else if(maxVal > (double)0xff)
+            numBitsPer = 16;
+        else if(maxVal > 0)
+            numBitsPer = 8;
+        if(numBitsPer > 0)
+            ui->spnBitsPerIn->setValue(numBitsPer);
+    }
+
+}
+
+

@@ -240,6 +240,8 @@ private slots:
 
     void on_chkBase64Out_stateChanged(int arg1);
 
+    void on_cmdDetectInputFormat_clicked();
+
 private:
     Ui::MainWindow *ui;
 

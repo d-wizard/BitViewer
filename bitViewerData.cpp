@@ -52,6 +52,39 @@ static const char BASE64_TO_ASCII[64] = {
  'w','x','y','z','0','1','2','3','4','5','6','7','8','9','+','/'  // 048 - 063
 };
 
+void BitViewerData::getInputValues(bool b_inputChanged, QStringList& inValues)
+{
+   QString inText = m_Input;
+   if(m_LineEndDelim == true)
+   {
+      if( m_Delimiter != "\r" &&
+         m_Delimiter != "\n" &&
+         m_Delimiter != "\r\n" )
+      {
+         inText = inText.replace("\r\n", m_Delimiter);
+         inText = inText.replace("\n", m_Delimiter);
+         inText = inText.replace("\r", m_Delimiter);
+      }
+   }
+   if(b_inputChanged)
+   {
+      inText = QString::fromStdString( removeNonDelimiterChars(
+         inText.toStdString(),
+         m_Delimiter.toStdString()) );
+   }
+
+   // If no delimiter, have just 1 inValues (i.e. the entire string).
+   if(m_Delimiter.length() > 0)
+   {
+      inValues = inText.split(m_Delimiter, Qt::SkipEmptyParts);
+   }
+   else
+   {
+      inValues.append(inText);
+   }
+
+}
+
 void BitViewerData::generateOutputData(bool b_inputChanged)
 {
    UINT_32 i_index;
@@ -79,35 +112,8 @@ void BitViewerData::generateOutputData(bool b_inputChanged)
    }
    else
    {
-      QString inText = m_Input;
-      if(m_LineEndDelim == true)
-      {
-         if( m_Delimiter != "\r" &&
-            m_Delimiter != "\n" &&
-            m_Delimiter != "\r\n" )
-         {
-            inText = inText.replace("\r\n", m_Delimiter);
-            inText = inText.replace("\n", m_Delimiter);
-            inText = inText.replace("\r", m_Delimiter);
-         }
-      }
-      if(b_inputChanged)
-      {
-         inText = QString::fromStdString( removeNonDelimiterChars(
-            inText.toStdString(),
-            m_Delimiter.toStdString()) );
-      }
-
-      // If no delimiter, have just 1 inValues (i.e. the entire string).
       QStringList inValues;
-      if(m_Delimiter.length() > 0)
-      {
-         inValues = inText.split(m_Delimiter, Qt::SkipEmptyParts);
-      }
-      else
-      {
-         inValues.append(inText);
-      }
+      getInputValues(b_inputChanged, inValues);
 
       // Input
       i_numInValues = inValues.count();

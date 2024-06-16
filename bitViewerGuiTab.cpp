@@ -163,3 +163,9 @@ void GuiTab::generateOutput(bool b_forceUpdate)
       }
    }
 }
+
+void GuiTab::getInput(bool b_forceUpdate, QStringList& inValues)
+{
+    syncInterpretWithGui();
+    m_bitViewerData.getInputValues(b_forceUpdate, inValues);
+}

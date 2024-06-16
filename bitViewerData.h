@@ -62,6 +62,7 @@ public:
 
 
     void generateOutputData(bool b_inputChanged);
+    void getInputValues(bool b_inputChanged, QStringList& inValues);
     void outputDataToStr();
     void outputAsciiDataToStr();
     void outputBase64DataToStr();

@@ -114,35 +114,16 @@
          <string>Input Interpretation</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_2">
-         <item row="1" column="0">
-          <widget class="QLabel" name="lblBaseIn">
+         <item row="3" column="0" colspan="2">
+          <widget class="QCheckBox" name="chkSignedIn">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The base of the input.&lt;/p&gt;&lt;p&gt;Typical values are 2 (binary), 10 (decimal) and 16 (hexadecimal).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Indicates whether the inputs values should be interpreted as signed numbers.&lt;/p&gt;&lt;p&gt;If unchecked, minus signs will be ignored.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="layoutDirection">
+            <enum>Qt::RightToLeft</enum>
            </property>
            <property name="text">
-            <string>Base</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QSpinBox" name="spnBaseIn">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The base of the input.&lt;/p&gt;&lt;p&gt;Typical values are 2 (binary), 10 (decimal) and 16 (hexadecimal).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="minimum">
-            <number>2</number>
-           </property>
-           <property name="maximum">
-            <number>16</number>
-           </property>
-           <property name="value">
-            <number>10</number>
+            <string>Signed</string>
            </property>
           </widget>
          </item>
@@ -153,6 +134,29 @@
            </property>
            <property name="text">
             <string>Bits Per</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="lblBaseIn">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The base of the input.&lt;/p&gt;&lt;p&gt;Typical values are 2 (binary), 10 (decimal) and 16 (hexadecimal).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>Base</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0" colspan="2">
+          <widget class="QCheckBox" name="chkBitReverseIn">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Swaps the Most Significant Bits with the Least Significant Bits for each input value.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="layoutDirection">
+            <enum>Qt::RightToLeft</enum>
+           </property>
+           <property name="text">
+            <string>Bit Reverse</string>
            </property>
           </widget>
          </item>
@@ -175,55 +179,6 @@
            </property>
            <property name="value">
             <number>8</number>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0" colspan="2">
-          <widget class="QCheckBox" name="chkSignedIn">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Indicates whether the inputs values should be interpreted as signed numbers.&lt;/p&gt;&lt;p&gt;If unchecked, minus signs will be ignored.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="layoutDirection">
-            <enum>Qt::RightToLeft</enum>
-           </property>
-           <property name="text">
-            <string>Signed</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0" colspan="2">
-          <widget class="QCheckBox" name="chkByteReverseIn">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Swaps the Most Significant Bytes with the Least Significant Bytes for each input value.&lt;/p&gt;&lt;p&gt;If checked, this will force Input &amp;quot;Bits Per&amp;quot; to be a whole number of bytes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="layoutDirection">
-            <enum>Qt::RightToLeft</enum>
-           </property>
-           <property name="text">
-            <string>Byte Reverse</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0" colspan="2">
-          <widget class="QCheckBox" name="chkBitReverseIn">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Swaps the Most Significant Bits with the Least Significant Bits for each input value.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="layoutDirection">
-            <enum>Qt::RightToLeft</enum>
-           </property>
-           <property name="text">
-            <string>Bit Reverse</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="0">
-          <widget class="QLabel" name="lblBitShiftIn">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A negative bit shift will remove input bits.&lt;/p&gt;&lt;p&gt;A positive bit shift prepend 0's to the input bits.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="text">
-            <string>Bit Shift</string>
            </property>
           </widget>
          </item>
@@ -275,6 +230,51 @@
            </property>
           </widget>
          </item>
+         <item row="4" column="0" colspan="2">
+          <widget class="QCheckBox" name="chkByteReverseIn">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Swaps the Most Significant Bytes with the Least Significant Bytes for each input value.&lt;/p&gt;&lt;p&gt;If checked, this will force Input &amp;quot;Bits Per&amp;quot; to be a whole number of bytes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="layoutDirection">
+            <enum>Qt::RightToLeft</enum>
+           </property>
+           <property name="text">
+            <string>Byte Reverse</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="lblBitShiftIn">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A negative bit shift will remove input bits.&lt;/p&gt;&lt;p&gt;A positive bit shift prepend 0's to the input bits.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>Bit Shift</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QSpinBox" name="spnBaseIn">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The base of the input.&lt;/p&gt;&lt;p&gt;Typical values are 2 (binary), 10 (decimal) and 16 (hexadecimal).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="minimum">
+            <number>2</number>
+           </property>
+           <property name="maximum">
+            <number>16</number>
+           </property>
+           <property name="value">
+            <number>10</number>
+           </property>
+          </widget>
+         </item>
          <item row="0" column="0">
           <widget class="QCheckBox" name="chkBase64In">
            <property name="toolTip">
@@ -285,6 +285,13 @@
            </property>
            <property name="text">
             <string>Base64</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="0" colspan="2">
+          <widget class="QPushButton" name="cmdDetectInputFormat">
+           <property name="text">
+            <string>Auto Detect</string>
            </property>
           </widget>
          </item>
