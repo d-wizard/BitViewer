@@ -1251,27 +1251,41 @@ void MainWindow::on_cmdDetectInputFormat_clicked()
     {
         ui->spnBaseIn->setValue(base);
 
-        double maxVal = 0;
+        double maxValPos = 0;
+        double maxValNeg = 0;
+
         for(int i = 0; i < numInValues; ++i)
         {
             try
             {
-               maxVal = std::max(maxVal, fabs((double)asciiToInt(inQstrList[i].toStdString(), base, neg_chars)));
-            }
-            catch (...) {}
+                bool isNeg = false;
+                double val = (double)asciiToUint(inQstrList[i].toStdString(), base, isNeg);
+                if(isNeg)
+                    maxValNeg = std::max(val, maxValNeg);
+                else
+                    maxValPos = std::max(val, maxValPos);
+            }catch (...) {}
         }
 
-        // Next Determine Bits Per
-        // double maxVal = pow((double)base, (double)maxNumCharsPerInput); // Old, lazy way to determine max...
-        int numBitsPer = 0; // Init to invalid.
-        if(maxVal > (double)0xffffffff)
+        // Determine max number of bits needed
+        int maxBitsPos = (maxValPos > 0) ? (floor(log2(maxValPos)) + 1) : 1; 
+        int maxBitsNeg = (maxValNeg > 0) ? (ceil(log2(maxValNeg)) + 1) : 1;
+        int numBitsPer = std::max(maxBitsPos, maxBitsNeg);
+        if(numBitsPer > 64)
             numBitsPer = 64;
-        else if(maxVal > (double)0xffff)
-            numBitsPer = 32;
-        else if(maxVal > (double)0xff)
-            numBitsPer = 16;
-        else if(maxVal > 0)
-            numBitsPer = 8;
+
+        // Next Determine Bits Per
+        if(ui->chkAutoStdInt->isChecked())
+        {
+           if(numBitsPer > 32)
+               numBitsPer = 64;
+           else if(numBitsPer > 16)
+               numBitsPer = 32;
+           else if(numBitsPer > 8)
+               numBitsPer = 16;
+           else
+               numBitsPer = 8;
+        }
         if(numBitsPer > 0)
             ui->spnBitsPerIn->setValue(numBitsPer);
     }

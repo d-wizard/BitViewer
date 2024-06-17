@@ -1,4 +1,4 @@
-/* Copyright 2012 - 2018 Dan Williams. All Rights Reserved.
+/* Copyright 2012 - 2018, 2024 Dan Williams. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -20,6 +20,7 @@
 #define IOUTILITIES_H
 
 INT_SMAX asciiToInt(const std::string& asc, int base, bool bSigned);
+INT_UMAX asciiToUint(const std::string& asc, int base, bool& bIsNegative);
 std::string intToAscii(INT_SMAX num, int base, int numBits, bool isSigned);
 int intToAscii_cArray(INT_UMAX num, int base, bool isSigned, char* leastSignificantPos);
 int determineNumChars(INT_UMAX value, int base);
