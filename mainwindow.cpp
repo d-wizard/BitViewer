@@ -143,6 +143,7 @@ MainWindow::MainWindow(QWidget *parent) :
     addIniParamToVector(m_iniParams, "cArray"      , INI_CHECK_BOX, ui->chkCArray);
     addIniParamToVector(m_iniParams, "AutoDelim"   , INI_CHECK_BOX, ui->chkDelimAuto);
     addIniParamToVector(m_iniParams, "LineEndDelim", INI_CHECK_BOX, ui->chkLineEndDelim);
+//    addIniParamToVector(m_iniParams, "InAutoStdInt", INI_CHECK_BOX, ui->chkAutoStdInt); Adding this in causes a crash. But the values seems to store and restore just fine without this line.
 
     readFromIniFile(INI_FILE_PATH, m_iniParams);
 
@@ -1306,4 +1307,14 @@ void MainWindow::on_chkAutoStdInt_stateChanged(int arg1)
    (void)arg1;
    updateOutputOnChange(GUI_AUTO_IN_STDINT);
    DetermineInputType();
+}
+
+void MainWindow::on_cmdMatchIn_clicked()
+{
+   ui->spnBaseOut->setValue(ui->spnBaseIn->value());
+   ui->spnBitsPerOut->setValue(ui->spnBitsPerIn->value());
+   ui->chkBase64Out->setChecked(ui->chkBase64In->isChecked());
+   ui->chkAsciiOut->setChecked(ui->chkAsciiIn->isChecked());
+   ui->chkSignedOut->setChecked(ui->chkSignedIn->isChecked());
+   updateForce();
 }

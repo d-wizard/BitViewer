@@ -409,48 +409,6 @@
          <string>Output Interpretation</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_3">
-         <item row="1" column="1">
-          <widget class="QSpinBox" name="spnBaseOut">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The base of the output.&lt;/p&gt;&lt;p&gt;Typical values are 2 (binary), 10 (decimal) and 16 (hexadecimal).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="minimum">
-            <number>2</number>
-           </property>
-           <property name="maximum">
-            <number>16</number>
-           </property>
-           <property name="value">
-            <number>10</number>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="lblBitsPerOut">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The number of bits to use for each output value.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="text">
-            <string>Bits Per</string>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="0" colspan="2">
-          <spacer name="verticalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::MinimumExpanding</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
          <item row="1" column="0">
           <widget class="QLabel" name="lblBaseOut">
            <property name="toolTip">
@@ -461,23 +419,13 @@
            </property>
           </widget>
          </item>
-         <item row="6" column="0">
-          <widget class="QLabel" name="lblBitShiftOut">
-           <property name="text">
-            <string>Bit Shift</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0" colspan="2">
-          <widget class="QCheckBox" name="chkSignedOut">
+         <item row="2" column="0">
+          <widget class="QLabel" name="lblBitsPerOut">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If checked, each output value will be interpreted as a signed number (e.g. if the most significant bit is a 1, the value will be negative).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="layoutDirection">
-            <enum>Qt::RightToLeft</enum>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The number of bits to use for each output value.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string>Signed</string>
+            <string>Bits Per</string>
            </property>
           </widget>
          </item>
@@ -504,16 +452,19 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
-          <widget class="QCheckBox" name="chkAsciiOut">
+         <item row="1" column="1">
+          <widget class="QSpinBox" name="spnBaseOut">
            <property name="toolTip">
-            <string>Interprets each output value as an ASCII character.</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The base of the output.&lt;/p&gt;&lt;p&gt;Typical values are 2 (binary), 10 (decimal) and 16 (hexadecimal).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
-           <property name="layoutDirection">
-            <enum>Qt::RightToLeft</enum>
+           <property name="minimum">
+            <number>2</number>
            </property>
-           <property name="text">
-            <string>ASCII</string>
+           <property name="maximum">
+            <number>16</number>
+           </property>
+           <property name="value">
+            <number>10</number>
            </property>
           </widget>
          </item>
@@ -530,19 +481,6 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="0">
-          <widget class="QCheckBox" name="chkBase64Out">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Similar to ASCII in that each output value is 1 character.&lt;/p&gt;&lt;p&gt;Base64 is only 6 bits per output character.&lt;/p&gt;&lt;p&gt;See https://en.wikipedia.org/wiki/Base64 for the character set.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="layoutDirection">
-            <enum>Qt::RightToLeft</enum>
-           </property>
-           <property name="text">
-            <string>Base64</string>
-           </property>
-          </widget>
-         </item>
          <item row="2" column="1">
           <widget class="QSpinBox" name="spnBitsPerOut">
            <property name="toolTip">
@@ -556,6 +494,81 @@
            </property>
            <property name="value">
             <number>8</number>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="lblBitShiftOut">
+           <property name="text">
+            <string>Bit Shift</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QCheckBox" name="chkBase64Out">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Similar to ASCII in that each output value is 1 character.&lt;/p&gt;&lt;p&gt;Base64 is only 6 bits per output character.&lt;/p&gt;&lt;p&gt;See https://en.wikipedia.org/wiki/Base64 for the character set.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="layoutDirection">
+            <enum>Qt::RightToLeft</enum>
+           </property>
+           <property name="text">
+            <string>Base64</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="0" colspan="2">
+          <spacer name="verticalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::MinimumExpanding</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="0" column="1">
+          <widget class="QCheckBox" name="chkAsciiOut">
+           <property name="toolTip">
+            <string>Interprets each output value as an ASCII character.</string>
+           </property>
+           <property name="layoutDirection">
+            <enum>Qt::RightToLeft</enum>
+           </property>
+           <property name="text">
+            <string>ASCII</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0" colspan="2">
+          <widget class="QCheckBox" name="chkSignedOut">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If checked, each output value will be interpreted as a signed number (e.g. if the most significant bit is a 1, the value will be negative).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="layoutDirection">
+            <enum>Qt::RightToLeft</enum>
+           </property>
+           <property name="text">
+            <string>Signed</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0" colspan="2">
+          <widget class="QPushButton" name="cmdMatchIn">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Match Input Settings</string>
            </property>
           </widget>
          </item>

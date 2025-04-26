@@ -246,6 +246,8 @@ private slots:
 
     void on_chkAutoStdInt_stateChanged(int arg1);
 
+    void on_cmdMatchIn_clicked();
+
 private:
     Ui::MainWindow *ui;
 
