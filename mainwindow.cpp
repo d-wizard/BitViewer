@@ -1,4 +1,4 @@
-/* Copyright 2012 - 2018, 2021, 2023 - 2024 Dan Williams. All Rights Reserved.
+/* Copyright 2012 - 2018, 2021, 2023 - 2025 Dan Williams. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -79,6 +79,9 @@ MainWindow::MainWindow(QWidget *parent) :
     m_guiPtrs[GUI_C_ARRAY       ] = ui->chkCArray;
     m_guiPtrs[GUI_AUTO_DELIM    ] = ui->chkDelimAuto;
     m_guiPtrs[GUI_LINE_END_DELIM] = ui->chkLineEndDelim;
+    m_guiPtrs[GUI_AUTO_IN_STDINT] = ui->chkAutoStdInt;
+
+    ui->chkAutoStdInt->setToolTip("If checked, only standard integer sizes will be automatically detected (8, 16, 32, 64 bits).");
 
     m_guiTabs.clear();
 
@@ -1179,7 +1182,7 @@ void MainWindow::readModType(const QString& t_modStr, e_modType& e_mod, INT_32& 
 }
 #endif
 
-void MainWindow::on_cmdDetectInputFormat_clicked()
+void MainWindow::DetermineInputType()
 {
     updateInput();
 
@@ -1292,4 +1295,15 @@ void MainWindow::on_cmdDetectInputFormat_clicked()
 
 }
 
+void MainWindow::on_cmdDetectInputFormat_clicked()
+{
+    DetermineInputType();
+}
 
+
+void MainWindow::on_chkAutoStdInt_stateChanged(int arg1)
+{
+   (void)arg1;
+   updateOutputOnChange(GUI_AUTO_IN_STDINT);
+   DetermineInputType();
+}
