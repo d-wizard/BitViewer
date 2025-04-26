@@ -1,4 +1,4 @@
-/* Copyright 2012 - 2018, 2021, 2023 - 2024 Dan Williams. All Rights Reserved.
+/* Copyright 2012 - 2018, 2021, 2023 - 2025 Dan Williams. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -35,6 +35,7 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include <math.h>
 #include "bitStreamCompare.h"
 #include <QClipboard>
 
@@ -78,6 +79,9 @@ MainWindow::MainWindow(QWidget *parent) :
     m_guiPtrs[GUI_C_ARRAY       ] = ui->chkCArray;
     m_guiPtrs[GUI_AUTO_DELIM    ] = ui->chkDelimAuto;
     m_guiPtrs[GUI_LINE_END_DELIM] = ui->chkLineEndDelim;
+    m_guiPtrs[GUI_AUTO_IN_STDINT] = ui->chkAutoStdInt;
+
+    ui->chkAutoStdInt->setToolTip("If checked, only standard integer sizes will be automatically detected (8, 16, 32, 64 bits).");
 
     m_guiTabs.clear();
 
@@ -1177,3 +1181,129 @@ void MainWindow::readModType(const QString& t_modStr, e_modType& e_mod, INT_32& 
     }
 }
 #endif
+
+void MainWindow::DetermineInputType()
+{
+    updateInput();
+
+    // Get Input Info.
+    std::string inputStr = ui->txtInput->text().toStdString();
+    QStringList inQstrList;
+    mp_curGuiTab->getIoGuiTab()->getInput(true, inQstrList);
+    auto numInValues = inQstrList.count();
+
+    // Determine how many character are in the input text.
+    int64_t maxNumCharsPerInput = 0;
+    int64_t totalNumChars = 0;
+    for(int i = 0; i < numInValues; ++i)
+    {
+        // Remove common characters that don't contribute to the number of bits per value.
+        auto inVal = inQstrList[i];
+        inVal = inVal.replace("0x", "");
+        inVal = inVal.replace("0X", "");
+        inVal = inVal.replace("-", "");
+
+        int64_t charSize = inVal.size();
+        maxNumCharsPerInput = std::max(maxNumCharsPerInput, charSize);
+        totalNumChars += charSize;
+    }
+
+    // Determine Base
+    bool hex_0x = (inputStr.find("0x") != std::string::npos) || (inputStr.find("0X") != std::string::npos);
+    bool hex_chars = false;
+    bool dec_chars = false;
+    bool bin_chars = false;
+    bool neg_chars = false;
+    const char* inPtr = inputStr.c_str();
+    const size_t inSize = inputStr.size();
+    for(size_t i = 0; i < inSize; ++i)
+    {
+        char inChar = inPtr[i];
+        if((inChar >= 'a') && (inChar <= 'f'))
+            hex_chars = true;
+        else if((inChar >= 'A') && (inChar <= 'F'))
+            hex_chars = true;
+        else if((inChar >= '2') && (inChar <= '9'))
+            dec_chars = true;
+        else if((inChar >= '0') && (inChar <= '1'))
+            bin_chars = true;
+        else if(inChar == '-')
+            neg_chars = true;
+    }
+
+    int base = 0; // Init to invalid.
+    if(hex_0x || hex_chars)
+    {
+        base = 16;
+    }
+    else if(bin_chars && !dec_chars && (totalNumChars > 10 || numInValues > 3)) // Don't auto set to base 2 unless there are plenty of only 1:0 characters. If not assume base 10
+    {
+        base = 2;
+    }
+    else if(dec_chars || bin_chars)
+    {
+        base = 10;
+        ui->chkSignedIn->setChecked(neg_chars);
+    }
+    else
+    {
+        // Do Nothing
+    }
+
+    if(base != 0)
+    {
+        ui->spnBaseIn->setValue(base);
+
+        double maxValPos = 0;
+        double maxValNeg = 0;
+
+        for(int i = 0; i < numInValues; ++i)
+        {
+            try
+            {
+                bool isNeg = false;
+                double val = (double)asciiToUint(inQstrList[i].toStdString(), base, isNeg);
+                if(isNeg)
+                    maxValNeg = std::max(val, maxValNeg);
+                else
+                    maxValPos = std::max(val, maxValPos);
+            }catch (...) {}
+        }
+
+        // Determine max number of bits needed
+        int maxBitsPos = (maxValPos > 0) ? (floor(log2(maxValPos)) + 1) : 1; 
+        int maxBitsNeg = (maxValNeg > 0) ? (ceil(log2(maxValNeg)) + 1) : 1;
+        int numBitsPer = std::max(maxBitsPos, maxBitsNeg);
+        if(numBitsPer > 64)
+            numBitsPer = 64;
+
+        // Next Determine Bits Per
+        if(ui->chkAutoStdInt->isChecked())
+        {
+           if(numBitsPer > 32)
+               numBitsPer = 64;
+           else if(numBitsPer > 16)
+               numBitsPer = 32;
+           else if(numBitsPer > 8)
+               numBitsPer = 16;
+           else
+               numBitsPer = 8;
+        }
+        if(numBitsPer > 0)
+            ui->spnBitsPerIn->setValue(numBitsPer);
+    }
+
+}
+
+void MainWindow::on_cmdDetectInputFormat_clicked()
+{
+    DetermineInputType();
+}
+
+
+void MainWindow::on_chkAutoStdInt_stateChanged(int arg1)
+{
+   (void)arg1;
+   updateOutputOnChange(GUI_AUTO_IN_STDINT);
+   DetermineInputType();
+}

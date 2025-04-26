@@ -1,4 +1,4 @@
-/* Copyright 2012 - 2018, 2021, 2023 Dan Williams. All Rights Reserved.
+/* Copyright 2012 - 2018, 2021, 2023 - 2025 Dan Williams. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -221,6 +221,8 @@ private slots:
 
     void CopyOutputForExcel();
 
+    void DetermineInputType();
+
 
     void on_chkDelimAuto_stateChanged(int arg1);
 
@@ -239,6 +241,10 @@ private slots:
     void on_chkBase64In_stateChanged(int arg1);
 
     void on_chkBase64Out_stateChanged(int arg1);
+
+    void on_cmdDetectInputFormat_clicked();
+
+    void on_chkAutoStdInt_stateChanged(int arg1);
 
 private:
     Ui::MainWindow *ui;

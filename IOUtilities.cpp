@@ -107,9 +107,50 @@ INT_SMAX asciiToInt(const std::string& asc, int base, bool bSigned)
       --i;
    }
    
-   if(bSigned == true && cAsc[i] == '-')
+   if(bSigned == true)
    {
-      retVal = -retVal;
+      while(i >= 0)
+      {
+         if(cAsc[i] == '-')
+         {
+            retVal = -retVal;
+            break;
+         }
+         --i;
+      }
+   }
+   return retVal;
+}
+
+INT_UMAX asciiToUint(const std::string& asc, int base, bool& bIsNegative) // bIsNegative is an output. If '-' is in the string, it will return true. False otherwise.
+{
+   INT_UMAX retVal = 0;
+   INT_UMAX power = 1;
+   const unsigned char* cAsc = (const unsigned char*)asc.c_str();
+   int i = asc.length() - 1;
+
+   if(gi_intToAsciiBase != base)
+   {
+      initAsciiToIntLookup(base);
+      gi_intToAsciiBase = base;
+   }
+
+   while(i >= 0 && gai_charToIntLookup[cAsc[i]] >= 0)
+   {
+      retVal += (gai_charToIntLookup[cAsc[i]]*power);
+      power *= base;
+      --i;
+   }
+
+   bIsNegative = false;
+   while(i >= 0)
+   {
+      if(cAsc[i] == '-')
+      {
+         bIsNegative = true;
+         break;
+      }
+      --i;
    }
    return retVal;
 }

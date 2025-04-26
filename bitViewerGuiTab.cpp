@@ -1,4 +1,4 @@
-/* Copyright 2012 - 2018, 2021 - 2022 Dan Williams. All Rights Reserved.
+/* Copyright 2012 - 2018, 2021 - 2022, 2024 - 2025 Dan Williams. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -70,6 +70,7 @@ void GuiTab::fillGuiObjArray(void** p_guiPtrs)
     m_guiObjs[GUI_C_ARRAY       ] = new CheckBoxObject(p_guiPtrs[GUI_C_ARRAY       ], &m_bitViewerData.m_cArray      );
     m_guiObjs[GUI_AUTO_DELIM    ] = new CheckBoxObject(p_guiPtrs[GUI_AUTO_DELIM    ], &m_bitViewerData.m_AutoDelim   );
     m_guiObjs[GUI_LINE_END_DELIM] = new CheckBoxObject(p_guiPtrs[GUI_LINE_END_DELIM], &m_bitViewerData.m_LineEndDelim);
+    m_guiObjs[GUI_AUTO_IN_STDINT] = new CheckBoxObject(p_guiPtrs[GUI_AUTO_IN_STDINT], &m_bitViewerData.m_AutoInStdInt);
 
 }
 
@@ -162,4 +163,10 @@ void GuiTab::generateOutput(bool b_forceUpdate)
          m_guiObjs[i]->outputUpdated();
       }
    }
+}
+
+void GuiTab::getInput(bool b_forceUpdate, QStringList& inValues)
+{
+    syncInterpretWithGui();
+    m_bitViewerData.getInputValues(b_forceUpdate, inValues);
 }

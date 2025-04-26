@@ -1,4 +1,4 @@
-/* Copyright 2012 - 2018, 2021, 2023 Dan Williams. All Rights Reserved.
+/* Copyright 2012 - 2018, 2021, 2023, 2025 Dan Williams. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -62,6 +62,7 @@ static const std::string INI_TAB_BIT_INVERT     = "TabBitInvert";
 static const std::string INI_TAB_C_ARRAY        = "TabcArray";
 static const std::string INI_TAB_AUTO_DELIM     = "TabAutoDelim";
 static const std::string INI_TAB_LINE_END_DELIM = "TabLineEndDelim";
+static const std::string INI_TAB_IN_AUTO_STDINT = "TabInAutoStdInt";
 
 static const std::string INI_START_OPEN = "{";
 static const std::string INI_START_CLOSE = "}=";
@@ -282,6 +283,7 @@ void writeTabToIni(std::string t_iniPath, UINT_32 i_tabNum, const std::string& t
     t_tabText.append(writeIniBool(INI_TAB_C_ARRAY       , t_bitViewerData.m_cArray      ));
     t_tabText.append(writeIniBool(INI_TAB_AUTO_DELIM    , t_bitViewerData.m_AutoDelim   ));
     t_tabText.append(writeIniBool(INI_TAB_LINE_END_DELIM, t_bitViewerData.m_LineEndDelim));
+    t_tabText.append(writeIniBool(INI_TAB_IN_AUTO_STDINT, t_bitViewerData.m_AutoInStdInt));
 
     t_iniFile.append(writeIniStr(INI_TAB_DELIM, t_tabText));
 
@@ -379,6 +381,7 @@ BitViewerData getTabBitViewerDataFromIni(std::string t_iniPath, UINT_32 i_tabNum
         t_bitViewerData.m_cArray       = readIniBool(INI_TAB_C_ARRAY       , t_tabText);
         t_bitViewerData.m_AutoDelim    = readIniBool(INI_TAB_AUTO_DELIM    , t_tabText);
         t_bitViewerData.m_LineEndDelim = readIniBool(INI_TAB_LINE_END_DELIM, t_tabText);
+        t_bitViewerData.m_AutoInStdInt = readIniBool(INI_TAB_IN_AUTO_STDINT, t_tabText);
 
     }
    return t_bitViewerData;
