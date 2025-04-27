@@ -1236,6 +1236,7 @@ void MainWindow::DetermineInputType()
     if(hex_0x || hex_chars)
     {
         base = 16;
+        ui->chkSignedIn->setChecked(neg_chars);
     }
     else if(bin_chars && !dec_chars && (totalNumChars > 10 || numInValues > 3)) // Don't auto set to base 2 unless there are plenty of only 1:0 characters. If not assume base 10
     {
@@ -1274,6 +1275,7 @@ void MainWindow::DetermineInputType()
         // Determine max number of bits needed
         int maxBitsPos = (maxValPos > 0) ? (floor(log2(maxValPos)) + 1) : 1; 
         int maxBitsNeg = (maxValNeg > 0) ? (ceil(log2(maxValNeg)) + 1) : 1;
+        if(maxValNeg > 0){maxBitsPos++;}; // Need and extra bit for negative numbers (only apply this to maxBitsPos, it is already taken into account for maxBitsNeg)
         int numBitsPer = std::max(maxBitsPos, maxBitsNeg);
         if(numBitsPer > 64)
             numBitsPer = 64;
