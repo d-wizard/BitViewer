@@ -223,6 +223,7 @@ private slots:
 
     void DetermineInputType();
 
+    void onApplicationFocusChanged(QWidget* old, QWidget* now);
 
     void on_chkDelimAuto_stateChanged(int arg1);
 
@@ -250,6 +251,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    bool eventFilter(QObject *object, QEvent *event);
 
     // Sub GUI's
     TabCompareDialog m_tabCompare;

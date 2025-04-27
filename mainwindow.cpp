@@ -162,6 +162,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //connect(ui->actionWrite_CSV_File, SIGNAL(triggered(bool)), this, SLOT(WriteOutputToCsvFile()));
 
+    connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)),
+      this, SLOT(onApplicationFocusChanged(QWidget*,QWidget*)));
 
     syncGuiTab();
 
@@ -244,6 +246,47 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::onApplicationFocusChanged(QWidget* /*old*/, QWidget* /*now*/)
+{
+   if(isActiveWindow())
+   {
+       QCoreApplication::instance()->installEventFilter(this);
+   }
+   else
+   {
+       QCoreApplication::instance()->removeEventFilter(this);
+   }
+}
+
+bool MainWindow::eventFilter(QObject *object, QEvent *event)
+{
+    bool usedEvent = false;
+    
+    if(isActiveWindow())
+    {
+        // Start assuming the event is going to be used
+        usedEvent = true;
+        if (event->type() == QEvent::KeyPress)
+        {
+            QKeyEvent *KeyEvent = (QKeyEvent*)event;
+
+            if(KeyEvent->key() == Qt::Key_Enter || KeyEvent->key() == Qt::Key_Return)
+            {
+                updateInput();
+            }
+        }
+    }
+
+    if(usedEvent)
+    {
+        return true;
+    }
+    else
+    {
+        // standard event processing
+        return QObject::eventFilter(object, event);
+    }
+}
 
 std::string MainWindow::getLastOpenSaveDir()
 {
