@@ -89,6 +89,8 @@ public:
     tAsciiSave m_asciiSaveOut;
     tAsciiSave m_base64SaveIn;
     tAsciiSave m_base64SaveOut;
+    tAsciiSave m_hexStrSaveIn;
+    tAsciiSave m_hexStrSaveOut;
 
     int i_bitsPerInSave;
     int i_bitsPerOutSave;
@@ -97,17 +99,23 @@ private:
     BitViewerGuiTab();
     void initSaveParam(void** p_guiTabPtrs)
     {
-       m_asciiSaveIn.i_bitsPer = ((QSpinBox*)p_guiTabPtrs[GUI_IN_BITS_PER])->value();
-       m_asciiSaveIn.b_signed = ((QCheckBox*)p_guiTabPtrs[GUI_IN_SIGNED])->isChecked();
+        m_asciiSaveIn.i_bitsPer = ((QSpinBox*)p_guiTabPtrs[GUI_IN_BITS_PER])->value();
+        m_asciiSaveIn.b_signed = ((QCheckBox*)p_guiTabPtrs[GUI_IN_SIGNED])->isChecked();
 
-       m_asciiSaveOut.i_bitsPer = ((QSpinBox*)p_guiTabPtrs[GUI_OUT_BITS_PER])->value();
-       m_asciiSaveOut.b_signed = ((QCheckBox*)p_guiTabPtrs[GUI_OUT_SIGNED])->isChecked();
+        m_asciiSaveOut.i_bitsPer = ((QSpinBox*)p_guiTabPtrs[GUI_OUT_BITS_PER])->value();
+        m_asciiSaveOut.b_signed = ((QCheckBox*)p_guiTabPtrs[GUI_OUT_SIGNED])->isChecked();
 
-       m_base64SaveIn.i_bitsPer = ((QSpinBox*)p_guiTabPtrs[GUI_IN_BITS_PER])->value();
-       m_base64SaveIn.b_signed = ((QCheckBox*)p_guiTabPtrs[GUI_IN_SIGNED])->isChecked();
+        m_base64SaveIn.i_bitsPer = ((QSpinBox*)p_guiTabPtrs[GUI_IN_BITS_PER])->value();
+        m_base64SaveIn.b_signed = ((QCheckBox*)p_guiTabPtrs[GUI_IN_SIGNED])->isChecked();
 
-       m_base64SaveOut.i_bitsPer = ((QSpinBox*)p_guiTabPtrs[GUI_OUT_BITS_PER])->value();
-       m_base64SaveOut.b_signed = ((QCheckBox*)p_guiTabPtrs[GUI_OUT_SIGNED])->isChecked();
+        m_base64SaveOut.i_bitsPer = ((QSpinBox*)p_guiTabPtrs[GUI_OUT_BITS_PER])->value();
+        m_base64SaveOut.b_signed = ((QCheckBox*)p_guiTabPtrs[GUI_OUT_SIGNED])->isChecked();
+
+        m_hexStrSaveIn.i_bitsPer = ((QSpinBox*)p_guiTabPtrs[GUI_IN_BITS_PER])->value();
+        m_hexStrSaveIn.b_signed = ((QCheckBox*)p_guiTabPtrs[GUI_IN_SIGNED])->isChecked();
+
+        m_hexStrSaveOut.i_bitsPer = ((QSpinBox*)p_guiTabPtrs[GUI_OUT_BITS_PER])->value();
+        m_hexStrSaveOut.b_signed = ((QCheckBox*)p_guiTabPtrs[GUI_OUT_SIGNED])->isChecked();
 
         i_bitsPerInSave = m_asciiSaveIn.i_bitsPer;
         i_bitsPerOutSave = m_asciiSaveOut.i_bitsPer;
@@ -248,6 +256,10 @@ private slots:
 
     void on_cmdMatchIn_clicked();
 
+    void on_chkHexStrIn_stateChanged(int arg1);
+
+    void on_chkHexStrOut_stateChanged(int arg1);
+
 private:
     Ui::MainWindow *ui;
 
@@ -284,6 +296,8 @@ private:
     void updateOutputOnChange(eGuiInputObject e_obj);
     void updateForce();
     void updateInput();
+    void updateGuiOnNonDelimChangeIn();
+    void updateGuiOnNonDelimChangeOut();
 
 
 #ifdef TIME_PROFILE

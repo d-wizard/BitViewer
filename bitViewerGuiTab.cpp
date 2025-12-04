@@ -58,11 +58,13 @@ void GuiTab::fillGuiObjArray(void** p_guiPtrs)
     m_guiObjs[GUI_NUM_ROWS      ] = new SpinBoxObject (p_guiPtrs[GUI_NUM_ROWS      ], &m_bitViewerData.m_NumRows     );
     m_guiObjs[GUI_IN_BASE64     ] = new CheckBoxObject(p_guiPtrs[GUI_IN_BASE64     ], &m_bitViewerData.m_InBase64    );
     m_guiObjs[GUI_IN_ASCII      ] = new CheckBoxObject(p_guiPtrs[GUI_IN_ASCII      ], &m_bitViewerData.m_InAscii     );
+    m_guiObjs[GUI_IN_HEXSTR     ] = new CheckBoxObject(p_guiPtrs[GUI_IN_HEXSTR     ], &m_bitViewerData.m_InHexStr    );
     m_guiObjs[GUI_IN_SIGNED     ] = new CheckBoxObject(p_guiPtrs[GUI_IN_SIGNED     ], &m_bitViewerData.m_InSigned    );
     m_guiObjs[GUI_IN_BYTE_REV   ] = new CheckBoxObject(p_guiPtrs[GUI_IN_BYTE_REV   ], &m_bitViewerData.m_InByteRev   );
     m_guiObjs[GUI_IN_BIT_REV    ] = new CheckBoxObject(p_guiPtrs[GUI_IN_BIT_REV    ], &m_bitViewerData.m_InBitRev    );
     m_guiObjs[GUI_OUT_BASE64    ] = new CheckBoxObject(p_guiPtrs[GUI_OUT_BASE64    ], &m_bitViewerData.m_OutBase64   );
     m_guiObjs[GUI_OUT_ASCII     ] = new CheckBoxObject(p_guiPtrs[GUI_OUT_ASCII     ], &m_bitViewerData.m_OutAscii    );
+    m_guiObjs[GUI_OUT_HEXSTR    ] = new CheckBoxObject(p_guiPtrs[GUI_OUT_HEXSTR    ], &m_bitViewerData.m_OutHexStr   );
     m_guiObjs[GUI_OUT_SIGNED    ] = new CheckBoxObject(p_guiPtrs[GUI_OUT_SIGNED    ], &m_bitViewerData.m_OutSigned   );
     m_guiObjs[GUI_OUT_BYTE_REV  ] = new CheckBoxObject(p_guiPtrs[GUI_OUT_BYTE_REV  ], &m_bitViewerData.m_OutByteRev  );
     m_guiObjs[GUI_OUT_BIT_REV   ] = new CheckBoxObject(p_guiPtrs[GUI_OUT_BIT_REV   ], &m_bitViewerData.m_OutBitRev   );

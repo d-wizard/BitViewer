@@ -1,4 +1,4 @@
-/* Copyright 2012 - 2018, 2021 - 2022, 2024 Dan Williams. All Rights Reserved.
+/* Copyright 2012 - 2018, 2021 - 2022, 2024 - 2025 Dan Williams. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -90,7 +90,7 @@ void BitViewerData::generateOutputData(bool b_inputChanged)
    UINT_32 i_index;
    UINT_32 i_numInValues;
 
-   if(m_InAscii || m_InBase64)
+   if(m_InAscii || m_InBase64 || m_InHexStr)
    {
       std::string inText = m_Input.toStdString();
       const char* pc_inText = inText.c_str();

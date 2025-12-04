@@ -67,11 +67,13 @@ MainWindow::MainWindow(QWidget *parent) :
     m_guiPtrs[GUI_NUM_ROWS      ] = ui->spnNumRows;
     m_guiPtrs[GUI_IN_BASE64     ] = ui->chkBase64In;
     m_guiPtrs[GUI_IN_ASCII      ] = ui->chkAsciiIn;
+    m_guiPtrs[GUI_IN_HEXSTR     ] = ui->chkHexStrIn;
     m_guiPtrs[GUI_IN_SIGNED     ] = ui->chkSignedIn;
     m_guiPtrs[GUI_IN_BYTE_REV   ] = ui->chkByteReverseIn;
     m_guiPtrs[GUI_IN_BIT_REV    ] = ui->chkBitReverseIn;
     m_guiPtrs[GUI_OUT_BASE64    ] = ui->chkBase64Out;
     m_guiPtrs[GUI_OUT_ASCII     ] = ui->chkAsciiOut;
+    m_guiPtrs[GUI_OUT_HEXSTR    ] = ui->chkHexStrOut;
     m_guiPtrs[GUI_OUT_SIGNED    ] = ui->chkSignedOut;
     m_guiPtrs[GUI_OUT_BYTE_REV  ] = ui->chkByteReverseOut;
     m_guiPtrs[GUI_OUT_BIT_REV   ] = ui->chkBitReverseOut;
@@ -732,31 +734,7 @@ void MainWindow::on_chkAsciiIn_stateChanged(int arg1)
         --m_readyToPrint;
         updateOutputOnChange(GUI_IN_ASCII);
     }
-    if(ui->chkAsciiIn->isChecked())
-    {
-        ui->chkByteReverseIn->setHidden(true);
-        ui->spnBaseIn->setHidden(true);
-        ui->lblBaseIn->setHidden(true);
-        ui->spnBitsPerIn->setHidden(true);
-        ui->lblBitsPerIn->setHidden(true);
-        ui->chkSignedIn->setHidden(true);
-        ui->chkBase64In->setHidden(true);
-        ui->chkBase64In->setChecked(false); // Uncheck when hiding. This way the "stateChange" function will trigger when this is visible and checked.
-    }
-    else if(!ui->chkBase64In->isChecked())
-    {
-        ui->chkByteReverseIn->setHidden(false);
-        ui->spnBaseIn->setHidden(false);
-        ui->lblBaseIn->setHidden(false);
-        ui->spnBitsPerIn->setHidden(false);
-        ui->lblBitsPerIn->setHidden(false);
-        ui->chkSignedIn->setHidden(false);
-        ui->chkBase64In->setHidden(false);
-    }
-    else
-    {
-        ui->chkBase64In->setHidden(false);
-    }
+    updateGuiOnNonDelimChangeIn();
 }
 
 void MainWindow::on_chkAsciiOut_stateChanged(int arg1)
@@ -781,31 +759,7 @@ void MainWindow::on_chkAsciiOut_stateChanged(int arg1)
         --m_readyToPrint;
         updateOutputOnChange(GUI_OUT_ASCII);
     }
-    if(ui->chkAsciiOut->isChecked())
-    {
-        ui->chkByteReverseOut->setHidden(true);
-        ui->spnBaseOut->setHidden(true);
-        ui->lblBaseOut->setHidden(true);
-        ui->spnBitsPerOut->setHidden(true);
-        ui->lblBitsPerOut->setHidden(true);
-        ui->chkSignedOut->setHidden(true);
-        ui->chkBase64Out->setHidden(true);
-        ui->chkBase64Out->setChecked(false); // Uncheck when hiding. This way the "stateChange" function will trigger when this is visible and checked.
-    }
-    else if(!ui->chkBase64Out->isChecked())
-    {
-        ui->chkByteReverseOut->setHidden(false);
-        ui->spnBaseOut->setHidden(false);
-        ui->lblBaseOut->setHidden(false);
-        ui->spnBitsPerOut->setHidden(false);
-        ui->lblBitsPerOut->setHidden(false);
-        ui->chkSignedOut->setHidden(false);
-        ui->chkBase64Out->setHidden(false);
-    }
-    else
-    {
-        ui->chkBase64Out->setHidden(false);
-    }
+   updateGuiOnNonDelimChangeOut();
 }
 
 void MainWindow::on_chkBase64In_stateChanged(int arg1)
@@ -830,31 +784,7 @@ void MainWindow::on_chkBase64In_stateChanged(int arg1)
       --m_readyToPrint;
       updateOutputOnChange(GUI_IN_BASE64);
    }
-   if(ui->chkBase64In->isChecked())
-   {
-      ui->chkByteReverseIn->setHidden(true);
-      ui->spnBaseIn->setHidden(true);
-      ui->lblBaseIn->setHidden(true);
-      ui->spnBitsPerIn->setHidden(true);
-      ui->lblBitsPerIn->setHidden(true);
-      ui->chkSignedIn->setHidden(true);
-      ui->chkAsciiIn->setHidden(true);
-      ui->chkAsciiIn->setChecked(false); // Uncheck when hiding. This way the "stateChange" function will trigger when this is visible and checked.
-   }
-   else if(!ui->chkAsciiIn->isChecked())
-   {
-      ui->chkByteReverseIn->setHidden(false);
-      ui->spnBaseIn->setHidden(false);
-      ui->lblBaseIn->setHidden(false);
-      ui->spnBitsPerIn->setHidden(false);
-      ui->lblBitsPerIn->setHidden(false);
-      ui->chkSignedIn->setHidden(false);
-      ui->chkAsciiIn->setHidden(false);
-   }
-   else
-   {
-      ui->chkAsciiIn->setHidden(false);
-   }
+   updateGuiOnNonDelimChangeIn();
 }
 
 void MainWindow::on_chkBase64Out_stateChanged(int arg1)
@@ -879,7 +809,125 @@ void MainWindow::on_chkBase64Out_stateChanged(int arg1)
       --m_readyToPrint;
       updateOutputOnChange(GUI_OUT_BASE64);
    }
-   if(ui->chkBase64Out->isChecked())
+   updateGuiOnNonDelimChangeOut();
+}
+
+
+void MainWindow::on_chkHexStrIn_stateChanged(int arg1)
+{
+   (void)arg1;
+   if(mp_curGuiTab != NULL && m_ignorTabChange == 0)
+   {
+      ++m_readyToPrint;
+      if(ui->chkHexStrIn->isChecked() == true)
+      {
+         mp_curGuiTab->m_hexStrSaveIn.i_bitsPer = ui->spnBitsPerIn->value();
+         ui->spnBitsPerIn->setValue(8);
+
+         mp_curGuiTab->m_hexStrSaveIn.b_signed = ui->chkSignedIn->isChecked();
+         ui->chkSignedIn->setChecked(false);
+      }
+      else
+      {
+         ui->spnBitsPerIn->setValue(mp_curGuiTab->m_hexStrSaveIn.i_bitsPer);
+         ui->chkSignedIn->setChecked(mp_curGuiTab->m_hexStrSaveIn.b_signed);
+      }
+      --m_readyToPrint;
+      updateOutputOnChange(GUI_IN_HEXSTR);
+   }
+   updateGuiOnNonDelimChangeIn();
+}
+
+void MainWindow::on_chkHexStrOut_stateChanged(int arg1)
+{
+   (void)arg1;
+   if(mp_curGuiTab != NULL && m_ignorTabChange == 0)
+   {
+      ++m_readyToPrint;
+      if(ui->chkHexStrOut->isChecked() == true)
+      {
+         mp_curGuiTab->m_hexStrSaveOut.i_bitsPer = ui->spnBitsPerOut->value();
+         ui->spnBitsPerOut->setValue(8);
+
+         mp_curGuiTab->m_hexStrSaveOut.b_signed = ui->chkSignedOut->isChecked();
+         ui->chkSignedOut->setChecked(false);
+      }
+      else
+      {
+         ui->spnBitsPerOut->setValue(mp_curGuiTab->m_hexStrSaveOut.i_bitsPer);
+         ui->chkSignedOut->setChecked(mp_curGuiTab->m_hexStrSaveOut.b_signed);
+      }
+      --m_readyToPrint;
+      updateOutputOnChange(GUI_OUT_HEXSTR);
+   }
+   updateGuiOnNonDelimChangeOut();
+}
+
+void MainWindow::updateGuiOnNonDelimChangeIn()
+{
+   if(ui->chkAsciiIn->isChecked())
+   {
+      ui->chkByteReverseIn->setHidden(true);
+      ui->spnBaseIn->setHidden(true);
+      ui->lblBaseIn->setHidden(true);
+      ui->spnBitsPerIn->setHidden(true);
+      ui->lblBitsPerIn->setHidden(true);
+      ui->chkSignedIn->setHidden(true);
+
+      ui->chkBase64In->setHidden(true);
+      ui->chkHexStrIn->setHidden(true);
+
+      ui->chkBase64In->setChecked(false); // Uncheck when hiding. This way the "stateChange" function will trigger when this is visible and checked.
+      ui->chkHexStrIn->setChecked(false); // Uncheck when hiding. This way the "stateChange" function will trigger when this is visible and checked.
+   }
+   else if(ui->chkBase64In->isChecked())
+   {
+      ui->chkByteReverseIn->setHidden(true);
+      ui->spnBaseIn->setHidden(true);
+      ui->lblBaseIn->setHidden(true);
+      ui->spnBitsPerIn->setHidden(true);
+      ui->lblBitsPerIn->setHidden(true);
+      ui->chkSignedIn->setHidden(true);
+
+      ui->chkAsciiIn->setHidden(true);
+      ui->chkHexStrIn->setHidden(true);
+
+      ui->chkAsciiIn->setChecked(false); // Uncheck when hiding. This way the "stateChange" function will trigger when this is visible and checked.
+      ui->chkHexStrIn->setChecked(false); // Uncheck when hiding. This way the "stateChange" function will trigger when this is visible and checked.
+   }
+   else if(ui->chkHexStrIn->isChecked())
+   {
+      ui->chkByteReverseIn->setHidden(true);
+      ui->spnBaseIn->setHidden(true);
+      ui->lblBaseIn->setHidden(true);
+      ui->spnBitsPerIn->setHidden(true);
+      ui->lblBitsPerIn->setHidden(true);
+      ui->chkSignedIn->setHidden(true);
+
+      ui->chkAsciiIn->setHidden(true);
+      ui->chkBase64In->setHidden(true);
+
+      ui->chkAsciiIn->setChecked(false); // Uncheck when hiding. This way the "stateChange" function will trigger when this is visible and checked.
+      ui->chkBase64In->setChecked(false); // Uncheck when hiding. This way the "stateChange" function will trigger when this is visible and checked.
+   }
+   else
+   {
+      // All unchecked
+      ui->chkByteReverseIn->setHidden(false);
+      ui->spnBaseIn->setHidden(false);
+      ui->lblBaseIn->setHidden(false);
+      ui->spnBitsPerIn->setHidden(false);
+      ui->lblBitsPerIn->setHidden(false);
+      ui->chkSignedIn->setHidden(false);
+      ui->chkAsciiIn->setHidden(false);
+      ui->chkBase64In->setHidden(false);
+      ui->chkHexStrIn->setHidden(false);
+   }
+}
+
+void MainWindow::updateGuiOnNonDelimChangeOut()
+{
+   if(ui->chkAsciiOut->isChecked())
    {
       ui->chkByteReverseOut->setHidden(true);
       ui->spnBaseOut->setHidden(true);
@@ -887,11 +935,46 @@ void MainWindow::on_chkBase64Out_stateChanged(int arg1)
       ui->spnBitsPerOut->setHidden(true);
       ui->lblBitsPerOut->setHidden(true);
       ui->chkSignedOut->setHidden(true);
-      ui->chkAsciiOut->setHidden(true);
-      ui->chkAsciiOut->setChecked(false); // Uncheck when hiding. This way the "stateChange" function will trigger when this is visible and checked.
+
+      ui->chkBase64Out->setHidden(true);
+      ui->chkHexStrOut->setHidden(true);
+
+      ui->chkBase64Out->setChecked(false); // Uncheck when hiding. This way the "stateChange" function will trigger when this is visible and checked.
+      ui->chkHexStrOut->setChecked(false); // Uncheck when hiding. This way the "stateChange" function will trigger when this is visible and checked.
    }
-   else if(!ui->chkAsciiOut->isChecked())
+   else if(ui->chkBase64Out->isChecked())
    {
+      ui->chkByteReverseOut->setHidden(true);
+      ui->spnBaseOut->setHidden(true);
+      ui->lblBaseOut->setHidden(true);
+      ui->spnBitsPerOut->setHidden(true);
+      ui->lblBitsPerOut->setHidden(true);
+      ui->chkSignedOut->setHidden(true);
+
+      ui->chkAsciiOut->setHidden(true);
+      ui->chkHexStrOut->setHidden(true);
+
+      ui->chkAsciiOut->setChecked(false); // Uncheck when hiding. This way the "stateChange" function will trigger when this is visible and checked.
+      ui->chkHexStrOut->setChecked(false); // Uncheck when hiding. This way the "stateChange" function will trigger when this is visible and checked.
+   }
+   else if(ui->chkHexStrOut->isChecked())
+   {
+      ui->chkByteReverseOut->setHidden(true);
+      ui->spnBaseOut->setHidden(true);
+      ui->lblBaseOut->setHidden(true);
+      ui->spnBitsPerOut->setHidden(true);
+      ui->lblBitsPerOut->setHidden(true);
+      ui->chkSignedOut->setHidden(true);
+
+      ui->chkAsciiOut->setHidden(true);
+      ui->chkBase64Out->setHidden(true);
+
+      ui->chkAsciiOut->setChecked(false); // Uncheck when hiding. This way the "stateChange" function will trigger when this is visible and checked.
+      ui->chkBase64Out->setChecked(false); // Uncheck when hiding. This way the "stateChange" function will trigger when this is visible and checked.
+   }
+   else
+   {
+      // All unchecked
       ui->chkByteReverseOut->setHidden(false);
       ui->spnBaseOut->setHidden(false);
       ui->lblBaseOut->setHidden(false);
@@ -899,13 +982,10 @@ void MainWindow::on_chkBase64Out_stateChanged(int arg1)
       ui->lblBitsPerOut->setHidden(false);
       ui->chkSignedOut->setHidden(false);
       ui->chkAsciiOut->setHidden(false);
-   }
-   else
-   {
-      ui->chkAsciiOut->setHidden(false);
+      ui->chkBase64Out->setHidden(false);
+      ui->chkHexStrOut->setHidden(false);
    }
 }
-
 
 void MainWindow::on_spnBitsPerIn_valueChanged(int arg1)
 {
