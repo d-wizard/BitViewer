@@ -52,6 +52,25 @@ static const char BASE64_TO_ASCII[64] = {
  'w','x','y','z','0','1','2','3','4','5','6','7','8','9','+','/'  // 048 - 063
 };
 
+static const char ASCII_TO_NIBBLE[256] = {
+   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, // 000 - 015
+   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, // 016 - 031
+   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, // 032 - 047
+   0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  0,  0,  0,  0,  0,  0, // 048 - 063
+   0, 10, 11, 12, 13, 14, 15,  0,  0,  0,  0,  0,  0,  0,  0,  0, // 064 - 079
+   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, // 080 - 095
+   0, 10, 11, 12, 13, 14, 15,  0,  0,  0,  0,  0,  0,  0,  0,  0, // 096 - 111
+   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, // 112 - 127
+   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, // 128 - 143
+   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, // 144 - 159
+   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, // 160 - 175
+   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, // 176 - 191
+   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, // 192 - 207
+   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, // 208 - 223
+   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, // 224 - 239
+   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // 240 - 255
+};
+
 void BitViewerData::getInputValues(bool b_inputChanged, QStringList& inValues)
 {
    QString inText = m_Input;
@@ -92,19 +111,29 @@ void BitViewerData::generateOutputData(bool b_inputChanged)
 
    if(m_InAscii || m_InBase64 || m_InHexStr)
    {
-      std::string inText = m_Input.toStdString();
+      const std::string inText = m_Input.toStdString();
       const char* pc_inText = inText.c_str();
+      const size_t inTextSize = inText.size();
       m_ioDataIn.clear();
       if(m_InBase64)
       {
-         for(i_index = 0; i_index < inText.size(); ++i_index)
+         for(i_index = 0; i_index < inTextSize; ++i_index)
          {
             m_ioDataIn.push_back(ASCII_TO_BASE64[(unsigned)pc_inText[i_index]]);
          }
       }
-      else
+      else if(m_InHexStr)
       {
-         for(i_index = 0; i_index < inText.size(); ++i_index)
+         for(i_index = 0; i_index < inTextSize/2; ++i_index)
+         {
+            char msNibble = ASCII_TO_NIBBLE[(unsigned)pc_inText[2*i_index+0]];
+            char lsNibble = ASCII_TO_NIBBLE[(unsigned)pc_inText[2*i_index+1]];
+            m_ioDataIn.push_back((msNibble << 4) + lsNibble);
+         }
+      }
+      else // ascii
+      {
+         for(i_index = 0; i_index < inTextSize; ++i_index)
          {
             m_ioDataIn.push_back(pc_inText[i_index]);
          }
