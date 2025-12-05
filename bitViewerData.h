@@ -68,6 +68,7 @@ public:
     void outputDataToStr();
     void outputAsciiDataToStr();
     void outputBase64DataToStr();
+    void outputHexStrDataToStr();
 
     QString m_Input;
     QString m_Delimiter;

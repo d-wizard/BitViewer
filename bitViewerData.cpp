@@ -71,6 +71,8 @@ static const char ASCII_TO_NIBBLE[256] = {
    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // 240 - 255
 };
 
+static const char NIBBLE_TO_ASCII[16] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+
 void BitViewerData::getInputValues(bool b_inputChanged, QStringList& inValues)
 {
    QString inText = m_Input;
@@ -245,6 +247,24 @@ void BitViewerData::outputBase64DataToStr()
          outText[i_index++] = BASE64_TO_ASCII[(*outValues & 0x3F)];
          nonNullByteWritten = true;
       }
+   }
+   outText[i_index] = '\0';
+   m_outputText = QString::fromStdString(outText);
+
+   delete [] outText;
+}
+
+void BitViewerData::outputHexStrDataToStr()
+{
+   int outSize = m_ioDataOut.size();
+   char* outText = new char[2*outSize + 1]; // 2x, each input value is a byte, output is 2 ascii chars
+   outText[outSize] = '\0';
+   int i_index = 0;
+   for(ioData::iterator outValues = m_ioDataOut.begin(); outValues != m_ioDataOut.end(); ++outValues)
+   {
+      char val = (*outValues) & 0xFF;
+      outText[i_index++] = NIBBLE_TO_ASCII[(val >> 4) & 0xF]; // MS Nibble
+      outText[i_index++] = NIBBLE_TO_ASCII[val & 0xF]; // LS Nibble
    }
    outText[i_index] = '\0';
    m_outputText = QString::fromStdString(outText);

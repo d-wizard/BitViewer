@@ -151,6 +151,10 @@ void GuiTab::generateOutput(bool b_forceUpdate)
       {
          m_bitViewerData.outputAsciiDataToStr();
       }
+      else if(m_bitViewerData.m_OutHexStr)
+      {
+         m_bitViewerData.outputHexStrDataToStr();
+      }
       else if(m_bitViewerData.m_OutBase64)
       {
          m_bitViewerData.outputBase64DataToStr();
