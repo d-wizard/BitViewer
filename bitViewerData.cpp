@@ -112,8 +112,8 @@ void BitViewerData::generateOutputData(bool b_inputChanged)
    UINT_32 i_numInValues;
 
    bool b_InAscii = (m_InType == "ASCII");
-   bool b_InBase64 = (m_InType == "Hex Bytes");
-   bool b_InHexStr = (m_InType == "Base64");
+   bool b_InBase64 = (m_InType == "Base64");
+   bool b_InHexStr = (m_InType == "Hex Bytes");
    if(b_InAscii || b_InBase64 || b_InHexStr)
    {
       const std::string inText = m_Input.toStdString();
