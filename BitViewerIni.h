@@ -1,4 +1,4 @@
-/* Copyright 2012 - 2018, 2023 Dan Williams. All Rights Reserved.
+/* Copyright 2012 - 2018, 2023, 2025 Dan Williams. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this
  * software and associated documentation files (the "Software"), to deal in the Software
@@ -27,6 +27,7 @@ typedef enum
     INI_PLAIN_TEXT_EDIT,
     INI_SPIN_BOX,
     INI_CHECK_BOX,
+    INI_COMBO_BOX,
     INI_NANOSEC_MAX_UINT
 }eIniType;
 

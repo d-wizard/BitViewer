@@ -65,15 +65,11 @@ MainWindow::MainWindow(QWidget *parent) :
     m_guiPtrs[GUI_OUT_BITS_PER  ] = ui->spnBitsPerOut;
     m_guiPtrs[GUI_OUT_BIT_SHIFT ] = ui->spnBitShiftOut;
     m_guiPtrs[GUI_NUM_ROWS      ] = ui->spnNumRows;
-    m_guiPtrs[GUI_IN_BASE64     ] = ui->chkBase64In;
-    m_guiPtrs[GUI_IN_ASCII      ] = ui->chkAsciiIn;
-    m_guiPtrs[GUI_IN_HEXSTR     ] = ui->chkHexStrIn;
+    m_guiPtrs[GUI_IN_TYPE       ] = ui->cmbTypeIn;
     m_guiPtrs[GUI_IN_SIGNED     ] = ui->chkSignedIn;
     m_guiPtrs[GUI_IN_BYTE_REV   ] = ui->chkByteReverseIn;
     m_guiPtrs[GUI_IN_BIT_REV    ] = ui->chkBitReverseIn;
-    m_guiPtrs[GUI_OUT_BASE64    ] = ui->chkBase64Out;
-    m_guiPtrs[GUI_OUT_ASCII     ] = ui->chkAsciiOut;
-    m_guiPtrs[GUI_OUT_HEXSTR    ] = ui->chkHexStrOut;
+    m_guiPtrs[GUI_OUT_TYPE      ] = ui->cmbTypeOut;
     m_guiPtrs[GUI_OUT_SIGNED    ] = ui->chkSignedOut;
     m_guiPtrs[GUI_OUT_BYTE_REV  ] = ui->chkByteReverseOut;
     m_guiPtrs[GUI_OUT_BIT_REV   ] = ui->chkBitReverseOut;
@@ -131,13 +127,11 @@ MainWindow::MainWindow(QWidget *parent) :
     addIniParamToVector(m_iniParams, "OutBitsPer"  , INI_SPIN_BOX , ui->spnBitsPerOut);
     addIniParamToVector(m_iniParams, "OutBitShift" , INI_SPIN_BOX , ui->spnBitShiftOut);
     addIniParamToVector(m_iniParams, "NumRows"     , INI_SPIN_BOX , ui->spnNumRows);
-    addIniParamToVector(m_iniParams, "InBase64"    , INI_CHECK_BOX, ui->chkBase64In);
-    addIniParamToVector(m_iniParams, "InAscii"     , INI_CHECK_BOX, ui->chkAsciiIn);
+    addIniParamToVector(m_iniParams, "InType"      , INI_COMBO_BOX, ui->cmbTypeIn);
     addIniParamToVector(m_iniParams, "InSigned"    , INI_CHECK_BOX, ui->chkSignedIn);
     addIniParamToVector(m_iniParams, "InByteRev"   , INI_CHECK_BOX, ui->chkByteReverseIn);
     addIniParamToVector(m_iniParams, "InBitRev"    , INI_CHECK_BOX, ui->chkBitReverseIn);
-    addIniParamToVector(m_iniParams, "OutBase64"   , INI_CHECK_BOX, ui->chkBase64Out);
-    addIniParamToVector(m_iniParams, "OutAscii"    , INI_CHECK_BOX, ui->chkAsciiOut);
+    addIniParamToVector(m_iniParams, "OutType"     , INI_COMBO_BOX, ui->cmbTypeOut);
     addIniParamToVector(m_iniParams, "OutSigned"   , INI_CHECK_BOX, ui->chkSignedOut);
     addIniParamToVector(m_iniParams, "OutByteRev"  , INI_CHECK_BOX, ui->chkByteReverseOut);
     addIniParamToVector(m_iniParams, "OutBitRev"   , INI_CHECK_BOX, ui->chkBitReverseOut);
@@ -475,7 +469,7 @@ void MainWindow::CopyOutputForExcel()
     QClipboard* clipboard = QApplication::clipboard();
     QString clipText;
 
-    if(ui->chkAsciiOut->isChecked() == false && ui->chkBase64Out->isChecked() == false && ui->chkCArray->isChecked() == false)
+    if(ui->cmbTypeIn->currentIndex() == 0 && ui->chkCArray->isChecked() == false) // TODO enum cmbTypeIn index
     {
         ++m_ignorGuiChange;
         ui->chkCArray->setChecked(true);
@@ -584,7 +578,7 @@ void MainWindow::ReadInputFromAsciiFile()
     std::string winFormatPath = QString::fromStdString(filename.toStdString()).replace("/", "\\").toStdString();
     ++m_readyToPrint;
     ui->txtInput->setText(QString::fromStdString(fso::ReadFile(winFormatPath)));
-    ui->chkAsciiIn->setChecked(true);
+    ui->cmbTypeIn->setCurrentText("ASCII");
     --m_readyToPrint;
     updateInput();
 }
@@ -711,161 +705,89 @@ void MainWindow::on_txtDelimiter_textChanged(const QString &arg1)
     updateOutputOnChange(GUI_DELIMITER);
 }
 
-
-void MainWindow::on_chkAsciiIn_stateChanged(int arg1)
+void MainWindow::on_cmbTypeIn_currentTextChanged(const QString &arg1)
 {
-    (void)arg1;
-    if(mp_curGuiTab != NULL && m_ignorTabChange == 0)
-    {
-        ++m_readyToPrint;
-        if(ui->chkAsciiIn->isChecked() == true)
-        {
-            mp_curGuiTab->m_asciiSaveIn.i_bitsPer = ui->spnBitsPerIn->value();
-            ui->spnBitsPerIn->setValue(8);
-
-            mp_curGuiTab->m_asciiSaveIn.b_signed = ui->chkSignedIn->isChecked();
-            ui->chkSignedIn->setChecked(false);
-        }
-        else
-        {
-            ui->spnBitsPerIn->setValue(mp_curGuiTab->m_asciiSaveIn.i_bitsPer);
-            ui->chkSignedIn->setChecked(mp_curGuiTab->m_asciiSaveIn.b_signed);
-        }
-        --m_readyToPrint;
-        updateOutputOnChange(GUI_IN_ASCII);
-    }
-    updateGuiOnNonDelimChangeIn();
-}
-
-void MainWindow::on_chkAsciiOut_stateChanged(int arg1)
-{
-    (void)arg1;
-    if(mp_curGuiTab != NULL && m_ignorTabChange == 0)
-    {
-        ++m_readyToPrint;
-        if(ui->chkAsciiOut->isChecked() == true)
-        {
-            mp_curGuiTab->m_asciiSaveOut.i_bitsPer = ui->spnBitsPerOut->value();
-            ui->spnBitsPerOut->setValue(8);
-
-            mp_curGuiTab->m_asciiSaveOut.b_signed = ui->chkSignedOut->isChecked();
-            ui->chkSignedOut->setChecked(false);
-        }
-        else
-        {
-            ui->spnBitsPerOut->setValue(mp_curGuiTab->m_asciiSaveOut.i_bitsPer);
-            ui->chkSignedOut->setChecked(mp_curGuiTab->m_asciiSaveOut.b_signed);
-        }
-        --m_readyToPrint;
-        updateOutputOnChange(GUI_OUT_ASCII);
-    }
-   updateGuiOnNonDelimChangeOut();
-}
-
-void MainWindow::on_chkBase64In_stateChanged(int arg1)
-{
-   (void)arg1;
    if(mp_curGuiTab != NULL && m_ignorTabChange == 0)
    {
-      ++m_readyToPrint;
-      if(ui->chkBase64In->isChecked() == true)
-      {
-         mp_curGuiTab->m_base64SaveIn.i_bitsPer = ui->spnBitsPerIn->value();
-         ui->spnBitsPerIn->setValue(6);
+       ++m_readyToPrint;
+       if(arg1 == "ASCII")
+       {
+           mp_curGuiTab->m_asciiSaveIn.i_bitsPer = ui->spnBitsPerIn->value();
+           ui->spnBitsPerIn->setValue(8);
 
-         mp_curGuiTab->m_base64SaveIn.b_signed = ui->chkSignedIn->isChecked();
-         ui->chkSignedIn->setChecked(false);
-      }
-      else
-      {
-         ui->spnBitsPerIn->setValue(mp_curGuiTab->m_base64SaveIn.i_bitsPer);
-         ui->chkSignedIn->setChecked(mp_curGuiTab->m_base64SaveIn.b_signed);
-      }
-      --m_readyToPrint;
-      updateOutputOnChange(GUI_IN_BASE64);
+           mp_curGuiTab->m_asciiSaveIn.b_signed = ui->chkSignedIn->isChecked();
+           ui->chkSignedIn->setChecked(false);
+       }
+       else if(arg1 == "Hex Bytes")
+       {
+          mp_curGuiTab->m_asciiSaveIn.i_bitsPer = ui->spnBitsPerIn->value();
+          ui->spnBitsPerIn->setValue(8);
+
+          mp_curGuiTab->m_asciiSaveIn.b_signed = ui->chkSignedIn->isChecked();
+          ui->chkSignedIn->setChecked(false);
+       }
+       else if(arg1 == "Base64")
+       {
+          mp_curGuiTab->m_asciiSaveIn.i_bitsPer = ui->spnBitsPerIn->value();
+          ui->spnBitsPerIn->setValue(6);
+
+          mp_curGuiTab->m_asciiSaveIn.b_signed = ui->chkSignedIn->isChecked();
+          ui->chkSignedIn->setChecked(false);
+       }
+       else
+       {
+           ui->spnBitsPerIn->setValue(mp_curGuiTab->m_asciiSaveIn.i_bitsPer);
+           ui->chkSignedIn->setChecked(mp_curGuiTab->m_asciiSaveIn.b_signed);
+       }
+       --m_readyToPrint;
+       updateOutputOnChange(GUI_IN_TYPE);
    }
    updateGuiOnNonDelimChangeIn();
 }
 
-void MainWindow::on_chkBase64Out_stateChanged(int arg1)
+void MainWindow::on_cmbTypeOut_currentTextChanged(const QString &arg1)
 {
-   (void)arg1;
    if(mp_curGuiTab != NULL && m_ignorTabChange == 0)
    {
-      ++m_readyToPrint;
-      if(ui->chkBase64Out->isChecked() == true)
-      {
-         mp_curGuiTab->m_base64SaveOut.i_bitsPer = ui->spnBitsPerOut->value();
-         ui->spnBitsPerOut->setValue(6);
+       ++m_readyToPrint;
+       if(arg1 == "ASCII")
+       {
+           mp_curGuiTab->m_asciiSaveOut.i_bitsPer = ui->spnBitsPerOut->value();
+           ui->spnBitsPerOut->setValue(8);
 
-         mp_curGuiTab->m_base64SaveOut.b_signed = ui->chkSignedOut->isChecked();
-         ui->chkSignedOut->setChecked(false);
-      }
-      else
-      {
-         ui->spnBitsPerOut->setValue(mp_curGuiTab->m_base64SaveOut.i_bitsPer);
-         ui->chkSignedOut->setChecked(mp_curGuiTab->m_base64SaveOut.b_signed);
-      }
-      --m_readyToPrint;
-      updateOutputOnChange(GUI_OUT_BASE64);
+           mp_curGuiTab->m_asciiSaveOut.b_signed = ui->chkSignedOut->isChecked();
+           ui->chkSignedOut->setChecked(false);
+       }
+       else if(arg1 == "Hex Bytes")
+       {
+          mp_curGuiTab->m_asciiSaveOut.i_bitsPer = ui->spnBitsPerOut->value();
+          ui->spnBitsPerOut->setValue(8);
+
+          mp_curGuiTab->m_asciiSaveOut.b_signed = ui->chkSignedOut->isChecked();
+          ui->chkSignedOut->setChecked(false);
+       }
+       else if(arg1 == "Base64")
+       {
+          mp_curGuiTab->m_asciiSaveOut.i_bitsPer = ui->spnBitsPerOut->value();
+          ui->spnBitsPerOut->setValue(6);
+
+          mp_curGuiTab->m_asciiSaveOut.b_signed = ui->chkSignedOut->isChecked();
+          ui->chkSignedOut->setChecked(false);
+       }
+       else
+       {
+           ui->spnBitsPerOut->setValue(mp_curGuiTab->m_asciiSaveOut.i_bitsPer);
+           ui->chkSignedOut->setChecked(mp_curGuiTab->m_asciiSaveOut.b_signed);
+       }
+       --m_readyToPrint;
+       updateOutputOnChange(GUI_OUT_TYPE);
    }
-   updateGuiOnNonDelimChangeOut();
-}
-
-
-void MainWindow::on_chkHexStrIn_stateChanged(int arg1)
-{
-   (void)arg1;
-   if(mp_curGuiTab != NULL && m_ignorTabChange == 0)
-   {
-      ++m_readyToPrint;
-      if(ui->chkHexStrIn->isChecked() == true)
-      {
-         mp_curGuiTab->m_hexStrSaveIn.i_bitsPer = ui->spnBitsPerIn->value();
-         ui->spnBitsPerIn->setValue(8);
-
-         mp_curGuiTab->m_hexStrSaveIn.b_signed = ui->chkSignedIn->isChecked();
-         ui->chkSignedIn->setChecked(false);
-      }
-      else
-      {
-         ui->spnBitsPerIn->setValue(mp_curGuiTab->m_hexStrSaveIn.i_bitsPer);
-         ui->chkSignedIn->setChecked(mp_curGuiTab->m_hexStrSaveIn.b_signed);
-      }
-      --m_readyToPrint;
-      updateOutputOnChange(GUI_IN_HEXSTR);
-   }
-   updateGuiOnNonDelimChangeIn();
-}
-
-void MainWindow::on_chkHexStrOut_stateChanged(int arg1)
-{
-   (void)arg1;
-   if(mp_curGuiTab != NULL && m_ignorTabChange == 0)
-   {
-      ++m_readyToPrint;
-      if(ui->chkHexStrOut->isChecked() == true)
-      {
-         mp_curGuiTab->m_hexStrSaveOut.i_bitsPer = ui->spnBitsPerOut->value();
-         ui->spnBitsPerOut->setValue(8);
-
-         mp_curGuiTab->m_hexStrSaveOut.b_signed = ui->chkSignedOut->isChecked();
-         ui->chkSignedOut->setChecked(false);
-      }
-      else
-      {
-         ui->spnBitsPerOut->setValue(mp_curGuiTab->m_hexStrSaveOut.i_bitsPer);
-         ui->chkSignedOut->setChecked(mp_curGuiTab->m_hexStrSaveOut.b_signed);
-      }
-      --m_readyToPrint;
-      updateOutputOnChange(GUI_OUT_HEXSTR);
-   }
-   updateGuiOnNonDelimChangeOut();
+  updateGuiOnNonDelimChangeOut();
 }
 
 void MainWindow::updateGuiOnNonDelimChangeIn()
 {
-   if(ui->chkAsciiIn->isChecked())
+   if(ui->cmbTypeIn->currentText() == "ASCII")
    {
       ui->chkByteReverseIn->setHidden(true);
       ui->spnBaseIn->setHidden(true);
@@ -873,14 +795,8 @@ void MainWindow::updateGuiOnNonDelimChangeIn()
       ui->spnBitsPerIn->setHidden(true);
       ui->lblBitsPerIn->setHidden(true);
       ui->chkSignedIn->setHidden(true);
-
-      ui->chkBase64In->setHidden(true);
-      ui->chkHexStrIn->setHidden(true);
-
-      ui->chkBase64In->setChecked(false); // Uncheck when hiding. This way the "stateChange" function will trigger when this is visible and checked.
-      ui->chkHexStrIn->setChecked(false); // Uncheck when hiding. This way the "stateChange" function will trigger when this is visible and checked.
    }
-   else if(ui->chkBase64In->isChecked())
+   else if(ui->cmbTypeIn->currentText() == "Base64")
    {
       ui->chkByteReverseIn->setHidden(true);
       ui->spnBaseIn->setHidden(true);
@@ -888,14 +804,8 @@ void MainWindow::updateGuiOnNonDelimChangeIn()
       ui->spnBitsPerIn->setHidden(true);
       ui->lblBitsPerIn->setHidden(true);
       ui->chkSignedIn->setHidden(true);
-
-      ui->chkAsciiIn->setHidden(true);
-      ui->chkHexStrIn->setHidden(true);
-
-      ui->chkAsciiIn->setChecked(false); // Uncheck when hiding. This way the "stateChange" function will trigger when this is visible and checked.
-      ui->chkHexStrIn->setChecked(false); // Uncheck when hiding. This way the "stateChange" function will trigger when this is visible and checked.
    }
-   else if(ui->chkHexStrIn->isChecked())
+   else if(ui->cmbTypeIn->currentText() == "Hex Bytes")
    {
       ui->chkByteReverseIn->setHidden(true);
       ui->spnBaseIn->setHidden(true);
@@ -903,12 +813,6 @@ void MainWindow::updateGuiOnNonDelimChangeIn()
       ui->spnBitsPerIn->setHidden(true);
       ui->lblBitsPerIn->setHidden(true);
       ui->chkSignedIn->setHidden(true);
-
-      ui->chkAsciiIn->setHidden(true);
-      ui->chkBase64In->setHidden(true);
-
-      ui->chkAsciiIn->setChecked(false); // Uncheck when hiding. This way the "stateChange" function will trigger when this is visible and checked.
-      ui->chkBase64In->setChecked(false); // Uncheck when hiding. This way the "stateChange" function will trigger when this is visible and checked.
    }
    else
    {
@@ -919,15 +823,12 @@ void MainWindow::updateGuiOnNonDelimChangeIn()
       ui->spnBitsPerIn->setHidden(false);
       ui->lblBitsPerIn->setHidden(false);
       ui->chkSignedIn->setHidden(false);
-      ui->chkAsciiIn->setHidden(false);
-      ui->chkBase64In->setHidden(false);
-      ui->chkHexStrIn->setHidden(false);
    }
 }
 
 void MainWindow::updateGuiOnNonDelimChangeOut()
 {
-   if(ui->chkAsciiOut->isChecked())
+   if(ui->cmbTypeOut->currentText() == "ASCII")
    {
       ui->chkByteReverseOut->setHidden(true);
       ui->spnBaseOut->setHidden(true);
@@ -935,14 +836,8 @@ void MainWindow::updateGuiOnNonDelimChangeOut()
       ui->spnBitsPerOut->setHidden(true);
       ui->lblBitsPerOut->setHidden(true);
       ui->chkSignedOut->setHidden(true);
-
-      ui->chkBase64Out->setHidden(true);
-      ui->chkHexStrOut->setHidden(true);
-
-      ui->chkBase64Out->setChecked(false); // Uncheck when hiding. This way the "stateChange" function will trigger when this is visible and checked.
-      ui->chkHexStrOut->setChecked(false); // Uncheck when hiding. This way the "stateChange" function will trigger when this is visible and checked.
    }
-   else if(ui->chkBase64Out->isChecked())
+   else if(ui->cmbTypeOut->currentText() == "Base64")
    {
       ui->chkByteReverseOut->setHidden(true);
       ui->spnBaseOut->setHidden(true);
@@ -950,14 +845,8 @@ void MainWindow::updateGuiOnNonDelimChangeOut()
       ui->spnBitsPerOut->setHidden(true);
       ui->lblBitsPerOut->setHidden(true);
       ui->chkSignedOut->setHidden(true);
-
-      ui->chkAsciiOut->setHidden(true);
-      ui->chkHexStrOut->setHidden(true);
-
-      ui->chkAsciiOut->setChecked(false); // Uncheck when hiding. This way the "stateChange" function will trigger when this is visible and checked.
-      ui->chkHexStrOut->setChecked(false); // Uncheck when hiding. This way the "stateChange" function will trigger when this is visible and checked.
    }
-   else if(ui->chkHexStrOut->isChecked())
+   else if(ui->cmbTypeOut->currentText() == "Hex Bytes")
    {
       ui->chkByteReverseOut->setHidden(true);
       ui->spnBaseOut->setHidden(true);
@@ -965,12 +854,6 @@ void MainWindow::updateGuiOnNonDelimChangeOut()
       ui->spnBitsPerOut->setHidden(true);
       ui->lblBitsPerOut->setHidden(true);
       ui->chkSignedOut->setHidden(true);
-
-      ui->chkAsciiOut->setHidden(true);
-      ui->chkBase64Out->setHidden(true);
-
-      ui->chkAsciiOut->setChecked(false); // Uncheck when hiding. This way the "stateChange" function will trigger when this is visible and checked.
-      ui->chkBase64Out->setChecked(false); // Uncheck when hiding. This way the "stateChange" function will trigger when this is visible and checked.
    }
    else
    {
@@ -981,9 +864,6 @@ void MainWindow::updateGuiOnNonDelimChangeOut()
       ui->spnBitsPerOut->setHidden(false);
       ui->lblBitsPerOut->setHidden(false);
       ui->chkSignedOut->setHidden(false);
-      ui->chkAsciiOut->setHidden(false);
-      ui->chkBase64Out->setHidden(false);
-      ui->chkHexStrOut->setHidden(false);
    }
 }
 
@@ -1395,8 +1275,8 @@ void MainWindow::on_cmdMatchIn_clicked()
 {
    ui->spnBaseOut->setValue(ui->spnBaseIn->value());
    ui->spnBitsPerOut->setValue(ui->spnBitsPerIn->value());
-   ui->chkBase64Out->setChecked(ui->chkBase64In->isChecked());
-   ui->chkAsciiOut->setChecked(ui->chkAsciiIn->isChecked());
+   ui->cmbTypeOut->setCurrentIndex(ui->cmbTypeIn->currentIndex());
    ui->chkSignedOut->setChecked(ui->chkSignedIn->isChecked());
    updateForce();
 }
+

@@ -22,6 +22,7 @@
 #include <QLineEdit>
 #include <QSpinBox>
 #include <QCheckBox>
+#include <QComboBox>
 #include "bitViewerData.h"
 
 typedef enum
@@ -35,15 +36,11 @@ typedef enum
     GUI_OUT_BITS_PER,
     GUI_OUT_BIT_SHIFT,
     GUI_NUM_ROWS,
-    GUI_IN_BASE64,
-    GUI_IN_ASCII,
-    GUI_IN_HEXSTR,
+    GUI_IN_TYPE,
     GUI_IN_SIGNED,
     GUI_IN_BYTE_REV,
     GUI_IN_BIT_REV,
-    GUI_OUT_BASE64,
-    GUI_OUT_ASCII,
-    GUI_OUT_HEXSTR,
+    GUI_OUT_TYPE,
     GUI_OUT_SIGNED,
     GUI_OUT_BYTE_REV,
     GUI_OUT_BIT_REV,
@@ -145,6 +142,32 @@ private:
     LineEditObject();
 
     QLineEdit* mp_lineEdit;
+    bool m_lineUpdated;
+    QString* m_guiValue;
+};
+
+class ComboBoxObject: public GuiObject
+{
+public:
+    ComboBoxObject(void* guiPtr, QString* guiVal):
+        GuiObject(guiPtr),
+        mp_comboBox((QComboBox*)guiPtr),
+        m_lineUpdated(false),
+        m_guiValue(guiVal)
+    {
+        *m_guiValue = "";
+    }
+
+    bool hasGuiChanged(){ return m_lineUpdated; }
+    void guiValueChanged(){ *m_guiValue = mp_comboBox->currentText(); m_lineUpdated = true; }
+    void outputUpdated(){ m_lineUpdated = false; }
+    void writeValueToGui(){ mp_comboBox->setCurrentText(*m_guiValue); }
+
+    QString getGuiValue(){ return *m_guiValue; }
+private:
+    ComboBoxObject();
+
+    QComboBox* mp_comboBox;
     bool m_lineUpdated;
     QString* m_guiValue;
 };

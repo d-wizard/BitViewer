@@ -32,15 +32,11 @@ public:
         m_OutBitsPer    (8),
         m_OutBitShift   (0),
         m_NumRows       (0),
-        m_InBase64      (false),
-        m_InAscii       (false),
-        m_InHexStr      (false),
+        m_InType        (""),
         m_InSigned      (false),
         m_InByteRev     (false),
         m_InBitRev      (false),
-        m_OutBase64     (false),
-        m_OutAscii      (false),
-        m_OutHexStr     (false),
+        m_OutType       (""),
         m_OutSigned     (false),
         m_OutByteRev    (false),
         m_OutBitRev     (false),
@@ -79,15 +75,11 @@ public:
     int m_OutBitsPer;
     int m_OutBitShift;
     int m_NumRows;
-    bool m_InBase64;
-    bool m_InAscii;
-    bool m_InHexStr;
+    QString m_InType;
     bool m_InSigned;
     bool m_InByteRev;
     bool m_InBitRev;
-    bool m_OutBase64;
-    bool m_OutAscii;
-    bool m_OutHexStr;
+    QString m_OutType;
     bool m_OutSigned;
     bool m_OutByteRev;
     bool m_OutBitRev;

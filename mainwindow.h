@@ -87,10 +87,6 @@ public:
 
     tAsciiSave m_asciiSaveIn;
     tAsciiSave m_asciiSaveOut;
-    tAsciiSave m_base64SaveIn;
-    tAsciiSave m_base64SaveOut;
-    tAsciiSave m_hexStrSaveIn;
-    tAsciiSave m_hexStrSaveOut;
 
     int i_bitsPerInSave;
     int i_bitsPerOutSave;
@@ -104,18 +100,6 @@ private:
 
         m_asciiSaveOut.i_bitsPer = ((QSpinBox*)p_guiTabPtrs[GUI_OUT_BITS_PER])->value();
         m_asciiSaveOut.b_signed = ((QCheckBox*)p_guiTabPtrs[GUI_OUT_SIGNED])->isChecked();
-
-        m_base64SaveIn.i_bitsPer = ((QSpinBox*)p_guiTabPtrs[GUI_IN_BITS_PER])->value();
-        m_base64SaveIn.b_signed = ((QCheckBox*)p_guiTabPtrs[GUI_IN_SIGNED])->isChecked();
-
-        m_base64SaveOut.i_bitsPer = ((QSpinBox*)p_guiTabPtrs[GUI_OUT_BITS_PER])->value();
-        m_base64SaveOut.b_signed = ((QCheckBox*)p_guiTabPtrs[GUI_OUT_SIGNED])->isChecked();
-
-        m_hexStrSaveIn.i_bitsPer = ((QSpinBox*)p_guiTabPtrs[GUI_IN_BITS_PER])->value();
-        m_hexStrSaveIn.b_signed = ((QCheckBox*)p_guiTabPtrs[GUI_IN_SIGNED])->isChecked();
-
-        m_hexStrSaveOut.i_bitsPer = ((QSpinBox*)p_guiTabPtrs[GUI_OUT_BITS_PER])->value();
-        m_hexStrSaveOut.b_signed = ((QCheckBox*)p_guiTabPtrs[GUI_OUT_SIGNED])->isChecked();
 
         i_bitsPerInSave = m_asciiSaveIn.i_bitsPer;
         i_bitsPerOutSave = m_asciiSaveOut.i_bitsPer;
@@ -234,10 +218,6 @@ private slots:
 
     void on_chkDelimAuto_stateChanged(int arg1);
 
-    void on_chkAsciiIn_stateChanged(int arg1);
-
-    void on_chkAsciiOut_stateChanged(int arg1);
-
     void on_chkLineEndDelim_stateChanged(int arg1);
 
     void on_tabWidget_tabCloseRequested(int index);
@@ -246,19 +226,15 @@ private slots:
 
     void on_cmdUpdateInput_clicked();
 
-    void on_chkBase64In_stateChanged(int arg1);
-
-    void on_chkBase64Out_stateChanged(int arg1);
-
     void on_cmdDetectInputFormat_clicked();
 
     void on_chkAutoStdInt_stateChanged(int arg1);
 
     void on_cmdMatchIn_clicked();
 
-    void on_chkHexStrIn_stateChanged(int arg1);
+    void on_cmbTypeIn_currentTextChanged(const QString &arg1);
 
-    void on_chkHexStrOut_stateChanged(int arg1);
+    void on_cmbTypeOut_currentTextChanged(const QString &arg1);
 
 private:
     Ui::MainWindow *ui;

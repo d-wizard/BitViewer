@@ -111,20 +111,23 @@ void BitViewerData::generateOutputData(bool b_inputChanged)
    UINT_32 i_index;
    UINT_32 i_numInValues;
 
-   if(m_InAscii || m_InBase64 || m_InHexStr)
+   bool b_InAscii = (m_InType == "ASCII");
+   bool b_InBase64 = (m_InType == "Hex Bytes");
+   bool b_InHexStr = (m_InType == "Base64");
+   if(b_InAscii || b_InBase64 || b_InHexStr)
    {
       const std::string inText = m_Input.toStdString();
       const char* pc_inText = inText.c_str();
       const size_t inTextSize = inText.size();
       m_ioDataIn.clear();
-      if(m_InBase64)
+      if(b_InBase64)
       {
          for(i_index = 0; i_index < inTextSize; ++i_index)
          {
             m_ioDataIn.push_back(ASCII_TO_BASE64[(unsigned)pc_inText[i_index]]);
          }
       }
-      else if(m_InHexStr)
+      else if(b_InHexStr)
       {
          for(i_index = 0; i_index < inTextSize/2; ++i_index)
          {

@@ -22,6 +22,7 @@
 #include <QLineEdit>
 #include <QSpinBox>
 #include <QCheckBox>
+#include <QComboBox>
 #include <QPlainTextEdit>
 #include "DataTypes.h"
 #include "IOUtilities.h"
@@ -48,15 +49,11 @@ static const std::string INI_TAB_OUT_BASE       = "TabOutBase";
 static const std::string INI_TAB_OUT_BITS_PER   = "TabOutBitsPer";
 static const std::string INI_TAB_OUT_BIT_SHIFT  = "TabOutBitShift";
 static const std::string INI_TAB_NUM_ROWS       = "TabNumRows";
-static const std::string INI_TAB_IN_BASE64      = "TabInBase64";
-static const std::string INI_TAB_IN_ASCII       = "TabInAscii";
-static const std::string INI_TAB_IN_HEXSTR      = "TabInHexStr";
+static const std::string INI_TAB_IN_TYPE        = "TabInType";
 static const std::string INI_TAB_IN_SIGNED      = "TabInSigned";
 static const std::string INI_TAB_IN_BYTE_REV    = "TabInByteRev";
 static const std::string INI_TAB_IN_BIT_REV     = "TabInBitRev";
-static const std::string INI_TAB_OUT_BASE64     = "TabOutBase64";
-static const std::string INI_TAB_OUT_ASCII      = "TabOutAscii";
-static const std::string INI_TAB_OUT_HEXSTR     = "TabOutHexStr";
+static const std::string INI_TAB_OUT_TYPE       = "TabOutType";
 static const std::string INI_TAB_OUT_SIGNED     = "TabOutSigned";
 static const std::string INI_TAB_OUT_BYTE_REV   = "TabOutByteRev";
 static const std::string INI_TAB_OUT_BIT_REV    = "TabOutBitRev";
@@ -185,6 +182,9 @@ void writeToIniFile(std::string t_iniPath, std::vector<tIniParam>& t_iniParams)
             case INI_CHECK_BOX:
                 t_line = writeIniBool(t_iter->t_name, ((QCheckBox*)t_iter->p_param)->isChecked());
             break;
+            case INI_COMBO_BOX:
+                t_line = writeIniStr(t_iter->t_name, ((QComboBox*)t_iter->p_param)->currentText().toStdString());
+            break;
             case INI_NANOSEC_MAX_UINT:
             {
                 char ac_ns[100];
@@ -271,15 +271,11 @@ void writeTabToIni(std::string t_iniPath, UINT_32 i_tabNum, const std::string& t
     t_tabText.append(writeIniInt (INI_TAB_OUT_BITS_PER  , t_bitViewerData.m_OutBitsPer  ));
     t_tabText.append(writeIniInt (INI_TAB_OUT_BIT_SHIFT , t_bitViewerData.m_OutBitShift ));
     t_tabText.append(writeIniInt (INI_TAB_NUM_ROWS      , t_bitViewerData.m_NumRows     ));
-    t_tabText.append(writeIniBool(INI_TAB_IN_BASE64     , t_bitViewerData.m_InBase64    ));
-    t_tabText.append(writeIniBool(INI_TAB_IN_ASCII      , t_bitViewerData.m_InAscii     ));
-    t_tabText.append(writeIniBool(INI_TAB_IN_HEXSTR     , t_bitViewerData.m_InHexStr    ));
+    t_tabText.append(writeIniStr (INI_TAB_IN_TYPE       , t_bitViewerData.m_InType.toStdString()));
     t_tabText.append(writeIniBool(INI_TAB_IN_SIGNED     , t_bitViewerData.m_InSigned    ));
     t_tabText.append(writeIniBool(INI_TAB_IN_BYTE_REV   , t_bitViewerData.m_InByteRev   ));
     t_tabText.append(writeIniBool(INI_TAB_IN_BIT_REV    , t_bitViewerData.m_InBitRev    ));
-    t_tabText.append(writeIniBool(INI_TAB_OUT_BASE64    , t_bitViewerData.m_OutBase64    ));
-    t_tabText.append(writeIniBool(INI_TAB_OUT_ASCII     , t_bitViewerData.m_OutAscii    ));
-    t_tabText.append(writeIniBool(INI_TAB_OUT_HEXSTR    , t_bitViewerData.m_OutHexStr   ));
+    t_tabText.append(writeIniStr (INI_TAB_OUT_TYPE      , t_bitViewerData.m_OutType.toStdString()));
     t_tabText.append(writeIniBool(INI_TAB_OUT_SIGNED    , t_bitViewerData.m_OutSigned   ));
     t_tabText.append(writeIniBool(INI_TAB_OUT_BYTE_REV  , t_bitViewerData.m_OutByteRev  ));
     t_tabText.append(writeIniBool(INI_TAB_OUT_BIT_REV   , t_bitViewerData.m_OutBitRev   ));
@@ -371,15 +367,11 @@ BitViewerData getTabBitViewerDataFromIni(std::string t_iniPath, UINT_32 i_tabNum
         t_bitViewerData.m_OutBitsPer   = readIniInt (INI_TAB_OUT_BITS_PER  , t_tabText);
         t_bitViewerData.m_OutBitShift  = readIniInt (INI_TAB_OUT_BIT_SHIFT , t_tabText);
         t_bitViewerData.m_NumRows      = readIniInt (INI_TAB_NUM_ROWS      , t_tabText);
-        t_bitViewerData.m_InBase64     = readIniBool(INI_TAB_IN_BASE64     , t_tabText);
-        t_bitViewerData.m_InAscii      = readIniBool(INI_TAB_IN_ASCII      , t_tabText);
-        t_bitViewerData.m_InHexStr     = readIniBool(INI_TAB_IN_HEXSTR     , t_tabText);
+        t_bitViewerData.m_InType       = QString::fromStdString(readIniStr(INI_TAB_IN_TYPE, t_tabText));
         t_bitViewerData.m_InSigned     = readIniBool(INI_TAB_IN_SIGNED     , t_tabText);
         t_bitViewerData.m_InByteRev    = readIniBool(INI_TAB_IN_BYTE_REV   , t_tabText);
         t_bitViewerData.m_InBitRev     = readIniBool(INI_TAB_IN_BIT_REV    , t_tabText);
-        t_bitViewerData.m_OutBase64    = readIniBool(INI_TAB_OUT_BASE64    , t_tabText);
-        t_bitViewerData.m_OutAscii     = readIniBool(INI_TAB_OUT_ASCII     , t_tabText);
-        t_bitViewerData.m_OutHexStr    = readIniBool(INI_TAB_OUT_HEXSTR    , t_tabText);
+        t_bitViewerData.m_OutType      = QString::fromStdString(readIniStr(INI_TAB_OUT_TYPE, t_tabText));
         t_bitViewerData.m_OutSigned    = readIniBool(INI_TAB_OUT_SIGNED    , t_tabText);
         t_bitViewerData.m_OutByteRev   = readIniBool(INI_TAB_OUT_BYTE_REV  , t_tabText);
         t_bitViewerData.m_OutBitRev    = readIniBool(INI_TAB_OUT_BIT_REV   , t_tabText);
