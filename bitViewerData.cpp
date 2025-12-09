@@ -261,7 +261,7 @@ void BitViewerData::outputHexStrDataToStr()
 {
    int outSize = m_ioDataOut.size();
    char* outText = new char[2*outSize + 1]; // 2x, each input value is a byte, output is 2 ascii chars
-   outText[outSize] = '\0';
+   outText[2*outSize] = '\0';
    int i_index = 0;
    for(ioData::iterator outValues = m_ioDataOut.begin(); outValues != m_ioDataOut.end(); ++outValues)
    {
