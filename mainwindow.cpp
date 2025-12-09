@@ -91,6 +91,16 @@ MainWindow::MainWindow(QWidget *parent) :
     mt_bitShiftStr = "Bit Shift ";
 #endif
 
+    // Set the In/Out Type combo boxes
+    ui->cmbTypeIn->addItem(IN_OUT_TYPE_DEFAULT);
+    ui->cmbTypeIn->addItem(IN_OUT_TYPE_ASCII);
+    ui->cmbTypeIn->addItem(IN_OUT_TYPE_HEX_STR);
+    ui->cmbTypeIn->addItem(IN_OUT_TYPE_BASE_64);
+    ui->cmbTypeOut->addItem(IN_OUT_TYPE_DEFAULT);
+    ui->cmbTypeOut->addItem(IN_OUT_TYPE_ASCII);
+    ui->cmbTypeOut->addItem(IN_OUT_TYPE_HEX_STR);
+    ui->cmbTypeOut->addItem(IN_OUT_TYPE_BASE_64);
+
     // For now do not use the middle section or out shift
     ui->middleGroupBox->setHidden(true);
     ui->lblBitShiftOut->setHidden(true);
@@ -578,7 +588,7 @@ void MainWindow::ReadInputFromAsciiFile()
     std::string winFormatPath = QString::fromStdString(filename.toStdString()).replace("/", "\\").toStdString();
     ++m_readyToPrint;
     ui->txtInput->setText(QString::fromStdString(fso::ReadFile(winFormatPath)));
-    ui->cmbTypeIn->setCurrentText("ASCII");
+    ui->cmbTypeIn->setCurrentText(IN_OUT_TYPE_ASCII);
     --m_readyToPrint;
     updateInput();
 }
@@ -710,7 +720,7 @@ void MainWindow::on_cmbTypeIn_currentTextChanged(const QString &arg1)
    if(mp_curGuiTab != NULL && m_ignorTabChange == 0)
    {
        ++m_readyToPrint;
-       if(arg1 == "ASCII")
+       if(arg1 == IN_OUT_TYPE_ASCII)
        {
            mp_curGuiTab->m_asciiSaveIn.i_bitsPer = ui->spnBitsPerIn->value();
            ui->spnBitsPerIn->setValue(8);
@@ -718,7 +728,7 @@ void MainWindow::on_cmbTypeIn_currentTextChanged(const QString &arg1)
            mp_curGuiTab->m_asciiSaveIn.b_signed = ui->chkSignedIn->isChecked();
            ui->chkSignedIn->setChecked(false);
        }
-       else if(arg1 == "Hex Bytes")
+       else if(arg1 == IN_OUT_TYPE_HEX_STR)
        {
           mp_curGuiTab->m_asciiSaveIn.i_bitsPer = ui->spnBitsPerIn->value();
           ui->spnBitsPerIn->setValue(8);
@@ -726,7 +736,7 @@ void MainWindow::on_cmbTypeIn_currentTextChanged(const QString &arg1)
           mp_curGuiTab->m_asciiSaveIn.b_signed = ui->chkSignedIn->isChecked();
           ui->chkSignedIn->setChecked(false);
        }
-       else if(arg1 == "Base64")
+       else if(arg1 == IN_OUT_TYPE_BASE_64)
        {
           mp_curGuiTab->m_asciiSaveIn.i_bitsPer = ui->spnBitsPerIn->value();
           ui->spnBitsPerIn->setValue(6);
@@ -750,7 +760,7 @@ void MainWindow::on_cmbTypeOut_currentTextChanged(const QString &arg1)
    if(mp_curGuiTab != NULL && m_ignorTabChange == 0)
    {
        ++m_readyToPrint;
-       if(arg1 == "ASCII")
+       if(arg1 == IN_OUT_TYPE_ASCII)
        {
            mp_curGuiTab->m_asciiSaveOut.i_bitsPer = ui->spnBitsPerOut->value();
            ui->spnBitsPerOut->setValue(8);
@@ -758,7 +768,7 @@ void MainWindow::on_cmbTypeOut_currentTextChanged(const QString &arg1)
            mp_curGuiTab->m_asciiSaveOut.b_signed = ui->chkSignedOut->isChecked();
            ui->chkSignedOut->setChecked(false);
        }
-       else if(arg1 == "Hex Bytes")
+       else if(arg1 == IN_OUT_TYPE_HEX_STR)
        {
           mp_curGuiTab->m_asciiSaveOut.i_bitsPer = ui->spnBitsPerOut->value();
           ui->spnBitsPerOut->setValue(8);
@@ -766,7 +776,7 @@ void MainWindow::on_cmbTypeOut_currentTextChanged(const QString &arg1)
           mp_curGuiTab->m_asciiSaveOut.b_signed = ui->chkSignedOut->isChecked();
           ui->chkSignedOut->setChecked(false);
        }
-       else if(arg1 == "Base64")
+       else if(arg1 == IN_OUT_TYPE_BASE_64)
        {
           mp_curGuiTab->m_asciiSaveOut.i_bitsPer = ui->spnBitsPerOut->value();
           ui->spnBitsPerOut->setValue(6);
@@ -787,7 +797,8 @@ void MainWindow::on_cmbTypeOut_currentTextChanged(const QString &arg1)
 
 void MainWindow::updateGuiOnNonDelimChangeIn()
 {
-   if(ui->cmbTypeIn->currentText() == "ASCII")
+   auto inType = ui->cmbTypeIn->currentText();
+   if(inType == IN_OUT_TYPE_ASCII)
    {
       ui->chkByteReverseIn->setHidden(true);
       ui->spnBaseIn->setHidden(true);
@@ -796,7 +807,7 @@ void MainWindow::updateGuiOnNonDelimChangeIn()
       ui->lblBitsPerIn->setHidden(true);
       ui->chkSignedIn->setHidden(true);
    }
-   else if(ui->cmbTypeIn->currentText() == "Base64")
+   else if(inType == IN_OUT_TYPE_BASE_64)
    {
       ui->chkByteReverseIn->setHidden(true);
       ui->spnBaseIn->setHidden(true);
@@ -805,7 +816,7 @@ void MainWindow::updateGuiOnNonDelimChangeIn()
       ui->lblBitsPerIn->setHidden(true);
       ui->chkSignedIn->setHidden(true);
    }
-   else if(ui->cmbTypeIn->currentText() == "Hex Bytes")
+   else if(inType == IN_OUT_TYPE_HEX_STR)
    {
       ui->chkByteReverseIn->setHidden(true);
       ui->spnBaseIn->setHidden(true);
@@ -828,7 +839,8 @@ void MainWindow::updateGuiOnNonDelimChangeIn()
 
 void MainWindow::updateGuiOnNonDelimChangeOut()
 {
-   if(ui->cmbTypeOut->currentText() == "ASCII")
+   auto outType = ui->cmbTypeOut->currentText();
+   if(outType == IN_OUT_TYPE_ASCII)
    {
       ui->chkByteReverseOut->setHidden(true);
       ui->spnBaseOut->setHidden(true);
@@ -837,7 +849,7 @@ void MainWindow::updateGuiOnNonDelimChangeOut()
       ui->lblBitsPerOut->setHidden(true);
       ui->chkSignedOut->setHidden(true);
    }
-   else if(ui->cmbTypeOut->currentText() == "Base64")
+   else if(outType == IN_OUT_TYPE_BASE_64)
    {
       ui->chkByteReverseOut->setHidden(true);
       ui->spnBaseOut->setHidden(true);
@@ -846,7 +858,7 @@ void MainWindow::updateGuiOnNonDelimChangeOut()
       ui->lblBitsPerOut->setHidden(true);
       ui->chkSignedOut->setHidden(true);
    }
-   else if(ui->cmbTypeOut->currentText() == "Hex Bytes")
+   else if(outType == IN_OUT_TYPE_HEX_STR)
    {
       ui->chkByteReverseOut->setHidden(true);
       ui->spnBaseOut->setHidden(true);

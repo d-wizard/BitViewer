@@ -19,6 +19,11 @@
 #ifndef bitViewerData_h
 #define bitViewerData_h
 
+#define IN_OUT_TYPE_DEFAULT   "Default (Delimited Values)"
+#define IN_OUT_TYPE_ASCII     "ASCII"
+#define IN_OUT_TYPE_HEX_STR   "Hex Bytes"
+#define IN_OUT_TYPE_BASE_64   "Base64"
+
 class BitViewerData
 {
 public:

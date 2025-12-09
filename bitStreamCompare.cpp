@@ -189,7 +189,7 @@ void bitStreamCompare::findMaxMatch(BitViewerData& dst, BitViewerData& src)
 
     dst.m_BitInvert = false;
 
-    if(src.m_InType == "ASCII")
+    if(src.m_InType == IN_OUT_TYPE_ASCII)
     {
         i_timesCheckSource = 3;
 
