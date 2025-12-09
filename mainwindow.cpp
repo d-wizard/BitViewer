@@ -479,7 +479,7 @@ void MainWindow::CopyOutputForExcel()
     QClipboard* clipboard = QApplication::clipboard();
     QString clipText;
 
-    if(ui->cmbTypeIn->currentIndex() == 0 && ui->chkCArray->isChecked() == false) // TODO enum cmbTypeIn index
+    if(ui->cmbTypeOut->currentText() == IN_OUT_TYPE_DEFAULT && ui->chkCArray->isChecked() == false)
     {
         ++m_ignorGuiChange;
         ui->chkCArray->setChecked(true);
