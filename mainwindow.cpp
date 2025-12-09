@@ -1272,6 +1272,7 @@ void MainWindow::DetermineInputType()
 
 void MainWindow::on_cmdDetectInputFormat_clicked()
 {
+    ui->cmbTypeIn->setCurrentText(IN_OUT_TYPE_DEFAULT); // Assume delimited if Auto Detect is clicked.
     DetermineInputType();
 }
 
